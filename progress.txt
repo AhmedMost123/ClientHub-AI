@@ -66,3 +66,313 @@ Environment Variables
 Domain
 
 CI/CD
+
+📍ClientHub AI Roadmap (Updated)
+✅ Stage 1 — Foundation (Done)
+Project Setup
+✅ Next.js 16
+✅ TypeScript
+✅ Tailwind CSS
+✅ shadcn/ui
+✅ Framer Motion
+✅ Theme System
+✅ Landing Page
+✅ Authentication UI
+✅ PostgreSQL
+✅ Prisma
+✅ Migrations
+✅ Seed Database
+🔜 Stage 2 — Authentication & Roles
+
+This is where the app actually starts.
+
+Authentication
+Register
+Login
+Logout
+Password Hashing (bcrypt)
+JWT / Session Authentication
+Remember Me
+Forgot Password
+Email Validation (optional later)
+User Roles
+
+Instead of one user type:
+
+Freelancer
+Client
+Admin (future)
+
+Each user has:
+
+id
+name
+email
+password
+role
+avatar
+createdAt
+
+Learn:
+
+Authentication
+Authorization
+Middleware
+Route Protection
+Role-based Access Control (RBAC)
+🔜 Stage 3 — Workspaces & Client Portal
+
+This is the core of the SaaS.
+
+Freelancer Dashboard
+Overview
+Statistics
+Revenue
+Active Projects
+Deadlines
+Notifications
+AI Widget
+Client Dashboard
+
+Very minimal.
+
+Client can see:
+
+Assigned Projects
+Progress
+Files
+Messages
+Invoice Status
+
+Nothing else.
+
+Learn:
+
+Different layouts
+Conditional rendering
+Permissions
+🔜 Stage 4 — Core CRUD
+Clients
+Invite Client
+Edit Client
+Archive Client
+Projects
+Create
+Edit
+Delete
+Status
+Due Date
+Budget
+Tasks
+Create
+Assign
+Complete
+Priority
+Due Date
+Invoices
+Draft
+Sent
+Paid
+Overdue
+
+Learn:
+
+Prisma Relations
+CRUD
+Validation
+Pagination
+Filtering
+Search
+🔜 Stage 5 — Client Collaboration
+
+Now the project becomes interesting.
+
+Messages
+
+Real-time chat
+
+Freelancer
+
+↓
+
+Client
+
+↓
+
+Reply
+
+↓
+
+Seen
+
+Learn:
+
+Socket.io
+Real-time Events
+Notifications
+File Sharing
+
+Freelancer uploads
+
+↓
+
+Client downloads
+
+↓
+
+Client uploads revisions
+
+Learn:
+
+Supabase Storage
+Uploads
+Signed URLs
+File Permissions
+Activity Timeline
+
+Example
+
+Ahmed uploaded Homepage.fig
+
+2 minutes ago
+
+John commented
+
+5 minutes ago
+
+Invoice marked as Paid
+
+Yesterday
+
+Learn:
+
+Audit Logs
+Events
+Timelines
+🔜 Stage 6 — AI Features
+
+Now AI becomes useful.
+
+Freelancer AI
+Write proposals
+Generate tasks
+Summarize conversations
+Rewrite messages
+Suggest deadlines
+Draft invoices
+Client AI
+
+Client can ask:
+
+What's the project status?
+
+When is delivery?
+
+What files have been uploaded?
+
+What invoices are pending?
+
+The AI answers using the project data.
+
+Learn:
+
+OpenAI API
+RAG basics
+AI context
+Prompt engineering
+🔜 Stage 7 — Notifications
+
+Inside app
+
+🔔 John sent a message
+
+🔔 New file uploaded
+
+🔔 Invoice paid
+
+🔔 Deadline tomorrow
+
+Later:
+
+Email notifications
+
+Learn:
+
+Notification System
+Event-driven Architecture
+🔜 Stage 8 — Settings
+
+Freelancer
+
+Profile
+Company
+Branding
+Logo
+Theme
+Password
+
+Client
+
+Profile
+Password
+Notifications
+🔜 Stage 9 — Deployment
+
+Backend
+
+Supabase PostgreSQL
+Supabase Storage
+
+Frontend
+
+Vercel
+
+Other
+
+Environment Variables
+Production Build
+Security
+Domain
+CI/CD
+🗄️ Updated Database
+
+We'll move from a simple database to something like this:
+
+users
+│
+├── role
+├── avatar
+├── email
+└── password
+
+clients
+│
+└── userId
+
+projects
+│
+├── freelancerId
+└── clientId
+
+tasks
+│
+└── projectId
+
+messages
+│
+├── senderId
+├── receiverId
+└── projectId
+
+files
+│
+├── projectId
+└── uploadedBy
+
+invoices
+│
+└── projectId
+
+notifications
+
+activity_logs

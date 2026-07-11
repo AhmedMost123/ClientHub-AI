@@ -1,17 +1,125 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Briefcase, Check, Eye, EyeOff, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+
+type AccountType = "FREELANCER" | "CLIENT";
+
+const accountTypes = [
+  {
+    type: "FREELANCER" as AccountType,
+    icon: Briefcase,
+    title: "Freelancer",
+    description:
+      "Manage clients, projects, invoices, tasks, AI assistant, and collaborate with your clients.",
+  },
+  {
+    type: "CLIENT" as AccountType,
+    icon: User,
+    title: "Client",
+    description:
+      "Track your projects, chat with your freelancer, upload files, and view invoices.",
+  },
+];
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [selectedAccountType, setSelectedAccountType] =
+    useState<AccountType>("FREELANCER");
 
   return (
     <form className="space-y-5">
+      {/* Hidden Role Field */}
+      <input type="hidden" name="role" value={selectedAccountType} />
+
+      {/* Account Type Selector */}
+      <div className="space-y-3">
+        <label className="text-sm font-medium">Choose your account type</label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {accountTypes.map((account) => {
+            const Icon = account.icon;
+            const isSelected = selectedAccountType === account.type;
+
+            return (
+              <motion.button
+                key={account.type}
+                type="button"
+                onClick={() => setSelectedAccountType(account.type)}
+                className={cn(
+                  "relative rounded-xl border p-4 text-left transition-all duration-200",
+                  "hover:border-border/80 hover:bg-muted/30",
+                  isSelected
+                    ? "border-primary ring-2 ring-primary/20"
+                    : "border-border/50"
+                )}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={
+                  isSelected
+                    ? {
+                        background: "var(--gradient-brand)",
+                        borderColor: "transparent",
+                      }
+                    : undefined
+                }
+              >
+                {/* Selected Indicator */}
+                {isSelected && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-white/20"
+                  >
+                    <Check className="size-3 text-white" />
+                  </motion.div>
+                )}
+
+                {/* Icon */}
+                <div
+                  className={cn(
+                    "mb-2 flex size-10 items-center justify-center rounded-lg",
+                    isSelected ? "bg-white/20" : "bg-muted"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "size-5",
+                      isSelected ? "text-white" : "text-foreground"
+                    )}
+                  />
+                </div>
+
+                {/* Title */}
+                <h3
+                  className={cn(
+                    "mb-1 text-sm font-semibold",
+                    isSelected ? "text-white" : "text-foreground"
+                  )}
+                >
+                  {account.title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  className={cn(
+                    "text-xs leading-relaxed",
+                    isSelected ? "text-white/80" : "text-muted-foreground"
+                  )}
+                >
+                  {account.description}
+                </p>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Name Field */}
       <div className="space-y-2">
         <label
