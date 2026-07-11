@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ClientStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Sender {
+  USER
+  CLIENT
+  AI
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  lastLogin DateTime?
+  avatar    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clients       Client[]
+  projects      Project[]
+  aiChats       AIChat[]
+  notifications Notification[]
+  settings      UserSettings?
+}
+
+model Client {
+  id      String       @id @default(cuid())
+  name    String
+  email   String       @unique
+  phone   String?
+  company String?
+  notes   String?
+  status  ClientStatus @default(LEAD)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft Delete
+
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects Project[]
+
+  @@index([userId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  progress    Int           @default(0)
+  budget      Decimal?      @db.Decimal(10, 2)
+  currency    String        @default("USD")
+  status      ProjectStatus @default(PLANNING)
+
+  startDate   DateTime?
+  dueDate     DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft Delete
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks    Task[]
+  files    File[]
+  messages ProjectMessage[]
+  invoices Invoice[]
+
+  @@index([clientId])
+  @@index([userId])
+}
+
+model Task {
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  estimatedHours Int?
+  status         TaskStatus @default(TODO)
+  priority       Priority   @default(MEDIUM)
+
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft Delete
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model File {
+  id         String   @id @default(cuid())
+  fileName   String
+  fileUrl    String
+  fileSize   Int
+  uploadedBy String
+  mimeType   String
+  uploadedAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ProjectMessage {
+  id        String   @id @default(cuid())
+  sender    Sender
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  paidAt        DateTime?
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  status        InvoiceStatus @default(DRAFT)
+
+  issueDate DateTime  @default(now())
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? // Soft Delete
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model AIChat {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id        String   @id @default(cuid())
+  role      Sender
+  content   String
+  createdAt DateTime @default(now())
+
+  chatId String
+  chat   AIChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  title     String
+  message   String
+  link      String?
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserSettings {
+  id          String   @id @default(cuid())
+  theme       Theme    @default(SYSTEM) // Fixed structural typing bug
+  language    String   @default("en")
+  emailAlerts Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

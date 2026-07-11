@@ -1,0 +1,28 @@
+instead of clicking "Create Table", you write:
+
+model User {
+  id    String @id @default(cuid())
+  name  String
+  email String @unique
+}
+
+Then run:
+
+npx prisma migrate dev --name init
+
+
+
+npx prisma validate
+npx prisma format
+npx prisma generate
+npx prisma migrate dev --name init
+
+
+
+npx prisma db seed
+
+
+
+import { PrismaClient, $Enums } from "@/lib/generated/prisma/client";
+
+theme: $Enums.Theme.SYSTEM
