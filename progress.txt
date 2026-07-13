@@ -1,4 +1,3 @@
-📍 ClientHub AI Roadmap v2
 ✅ Stage 1 — Foundation (Done)
 Project Setup
 ✅ Next.js 16
@@ -8,110 +7,151 @@ Project Setup
 ✅ Framer Motion
 Infrastructure
 ✅ PostgreSQL
-✅ Prisma
+✅ Prisma ORM
 ✅ Database Migrations
 ✅ Seed Database
 UI
 ✅ Landing Page
 ✅ Dashboard Layout
 ✅ Theme System
-🔜 Stage 2 — Authentication
+✅ Stage 2 — Authentication (Done)
+Goal
 
-Goal: Users can securely log in.
+Users can securely register and access the platform.
 
-Backend
-Register ✅
-Login ✅
-Logout ✅
-Password Hashing ✅
-JWT / NextAuth Sessions ✅
-Role-based Authentication ✅
-Database ✅
+Features
+✅ Register
+✅ Login
+✅ Logout
+✅ Password Hashing (bcrypt)
+✅ NextAuth JWT Sessions
+✅ Role-Based Authentication
+Database
 User
-- id
-- name
-- email
-- password
-- role
-- avatar
+id
+name
+email
+password
+role
+avatar
+createdAt
+updatedAt
 Result
 
-✅ Freelancer can log in
+✅ Freelancer authentication
 
-✅ Client can log in
+✅ Client authentication
 
-🔜 Stage 3 — Client & Project Management
+🔜 Stage 3 — Client Contacts & Project Management
+Goal
 
-Goal: Freelancer can manage clients and projects.
+Freelancers can manage clients, create projects, and optionally connect platform clients.
 
-Clients
+Client Contacts
+
+A client contact represents the real person or company the freelancer works with.
+
+A client contact does not need a ClientHub account.
+
+Features
+
 Create
 Edit
-Delete
 Archive
+Delete
+Add company information
+Add notes
+Link platform account (optional)
+
+Example
+
+Microsoft
+Linked Account: None
+Sarah Johnson
+Linked Account: Sarah (ClientHub User)
 Projects
+
+Every project belongs to a Client Contact.
+
+Features
+
 Create
 Edit
 Delete
 Status
 Budget
 Due Date
+
+Examples
+
+Company Website
+Mobile App
+Dashboard Redesign
 Dashboard
 
-Replace fake data with real Prisma queries.
+Replace all fake dashboard data with real Prisma queries.
 
 🔜 Stage 4 — Project Workspace ⭐
 
-This becomes the heart of the application.
+This becomes the core of the application.
 
-Instead of thinking:
-
-Project → Messages
-
-Think:
+Every project has its own workspace.
 
 Project Workspace
 
 ├── Overview
-├── Chat
+├── Tasks
 ├── Files
+├── Invoices
 ├── Activity
-
-Every project has its own workspace.
-
+└── Chat (only when a client account is linked)
 Overview
-Project info
+
+Displays
+
+Project Information
 Progress
 Budget
 Deadline
+Team Members
+Recent Activity
 Chat
+
+Available only when a platform client is linked.
 
 Shared conversation
 
 Freelancer ↔ Client
-
 Files
-
 Upload
-
 Download
-
 Preview
+Version History
+
+If the client is linked, both users can upload files.
 
 Activity
 
-Timeline
+Timeline example
 
 Ahmed uploaded Homepage.fig
 
-Client replied
+↓
+
+Client commented
+
+↓
 
 Invoice marked Paid
+
+↓
+
+Homepage approved
 🔜 Stage 5 — Tasks & Progress
 
-Inside every project:
+Each project contains tasks.
 
-Tasks
+Example
 
 Homepage
 
@@ -123,9 +163,9 @@ Homepage
 
 ☐ Contact Form
 
-Progress becomes automatic.
+Project progress is calculated automatically.
 
-2 / 4 completed
+2 / 4 Completed
 
 ↓
 
@@ -135,7 +175,7 @@ No manual progress slider.
 
 🔜 Stage 6 — Invoices
 
-Invoice
+Invoice Workflow
 
 Draft
 
@@ -147,60 +187,52 @@ Sent
 
 Paid
 
-Dashboard shows
+Dashboard Metrics
 
 Revenue
 Pending
 Paid
 Overdue
+
+Clients can view invoices for linked projects.
+
 🔜 Stage 7 — Notifications
+
+In-App Notifications
 
 Examples
 
 New message
-
-New upload
-
+New file uploaded
 Invoice paid
-
 Deadline tomorrow
-
-Only in-app notifications for now.
-
+Project completed
 🔜 Stage 8 — AI Assistant
 
-Inside the workspace.
+Every project has its own AI assistant.
 
-Instead of random AI features:
-
-Project AI
+Instead of generic AI tools, AI understands the current project.
 
 Examples
 
+Summarize project activity
 Summarize chat
-
 Generate task list
+Rewrite client messages
+Generate invoice descriptions
+Suggest deadlines
+Generate project updates
 
-Rewrite message
-
-Generate invoice description
-
-Suggest deadline
-
-Uses project data as context.
+The AI uses project data as context.
 
 🔜 Stage 9 — Settings
-
 Freelancer
-
 Profile
-Company
+Company Information
 Branding
 Theme
 Password
-
 Client
-
 Profile
 Password
 🔜 Stage 10 — Deployment
@@ -212,12 +244,8 @@ Vercel
 Production
 Environment Variables
 Security
-Domain
+Custom Domain
 CI/CD
-
-Development Order
-
-This is the order I'd follow from here:
 
 ✅ Authentication (finished)
 Client CRUD
@@ -235,58 +263,52 @@ Deployment
 
 
 
-Project Goal
+🎯 Project Goal
 
-ClientHub AI is a project management platform for freelancers that helps them manage every client project in one workspace, whether or not the client has a ClientHub account. When a client is invited to the platform, the workspace becomes collaborative with chat, file sharing, and project updates.
+ClientHub AI is a project management platform that enables freelancers to organize every client project in one place.
 
-In one sentence:
+Unlike traditional collaboration tools, projects can exist with or without a client account. Freelancers can manage offline clients just as easily as clients who join the platform.
 
-Instead of using WhatsApp, Google Drive, Trello, and Excel separately, a freelancer manages every client from one dashboard.
+When a client is linked to a project, the workspace automatically becomes collaborative, unlocking chat, file sharing, project updates, invoices, and notifications.
 
-Who uses it?
+💡 In One Sentence
 
-Only two real users.
+Instead of using WhatsApp, Google Drive, Trello, Excel, and Email separately, freelancers manage every project from one intelligent workspace.
 
+👥 Who Uses ClientHub AI?
 1. Freelancer
 
-The owner of the workspace.
+The freelancer owns the workspace.
 
-Can:
+They can:
 
-Manage clients
+Manage client contacts
 Create projects
 Create tasks
-Chat with clients
 Upload files
-Send invoices
+Generate invoices
 Track deadlines
-Use AI assistant
-View revenue dashboard
-
-Think of them as the business owner.
-
+Use the AI assistant
+View business analytics
+Invite clients to collaborate
 2. Client
 
-The client has a much simpler experience.
-
-They cannot manage the system.
-
-They can only access projects shared with them.
+Clients only access projects shared with them.
 
 They can:
 
 View project details
-Check project progress
+Track progress
 View completed tasks
-Download uploaded files
+Download deliverables
 Upload revisions
-Chat with freelancer
+Chat with the freelancer
 View invoices
 Receive notifications
 
-That's it.
+Clients cannot manage the freelancer's workspace or access other projects.
 
-User Flow
+🔄 User Flow
 Freelancer
 Login
 
@@ -296,7 +318,7 @@ Dashboard
 
 ↓
 
-Create Client
+Create Client Contact
 
 ↓
 
@@ -304,7 +326,10 @@ Create Project
 
 ↓
 
-Assign Client
+(Optional)
+Link Existing Client
+or
+Invite Client
 
 ↓
 
@@ -312,16 +337,22 @@ Project Workspace
 
 ↓
 
-Chat
+Overview
 Tasks
 Files
 Invoices
+Activity
+Chat (if linked)
 
 ↓
 
 Project Completed
 Client
-Login
+Receive Invitation
+
+↓
+
+Create Account / Login
 
 ↓
 
@@ -345,7 +376,7 @@ Chat
 
 ↓
 
-Upload Revision
+Upload Files
 
 ↓
 
@@ -353,58 +384,47 @@ Download Deliverables
 
 ↓
 
-Pay Invoice
-Example
+View Invoices
+🌍 Real-World Example
 
-Imagine you're a freelance web developer.
+Ahmed is a freelance web developer.
 
-A client hires you to build a company website.
-
-Instead of
-
-WhatsApp
-
-Google Drive
-
-Email
-
-Excel
-
-Notion
-
-everything happens here.
-
-Freelancer creates
-Company Website
-
-Budget
-
-$1200
-
-Due Date
-
-20 Aug
-
-Client receives access.
-
-They log in.
-
-They immediately see
-
-Projects
+He creates a project for Microsoft.
 
 Company Website
 
-Open it.
+Budget: $1,200
 
-Inside
+Due Date: 20 Aug
 
-Overview
+Linked Client: None
 
-Chat
+Microsoft never joins the platform.
 
-Files
+Ahmed still manages:
 
 Tasks
-
+Files
+Progress
+Budget
+Deadlines
 Invoices
+
+Everything works as a personal project management workspace.
+
+Later, Ahmed builds a website for Sarah.
+
+Sarah accepts an invitation and creates a ClientHub account.
+
+The same project instantly becomes collaborative.
+
+Sarah can now:
+
+Chat with Ahmed
+Download files
+Upload revisions
+View project progress
+View invoices
+Receive notifications
+
+No migration or duplicate project is needed—the collaboration features simply become available once the client is linked.
