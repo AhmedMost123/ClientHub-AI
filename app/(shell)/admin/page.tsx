@@ -1,9 +1,12 @@
 import { PlaceholderPage } from "@/components/shared/PlaceholderPage";
+import { requireAdmin } from "@/lib/auth/authorization";
 import { getPageConfig } from "@/lib/pages";
 
 const config = getPageConfig("admin")!;
 
-export default function Page() {
+export default async function Page() {
+  await requireAdmin();
+
   return (
     <PlaceholderPage
       title={config.title}

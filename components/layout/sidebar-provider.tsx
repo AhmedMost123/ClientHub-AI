@@ -55,7 +55,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
       setMobileOpen,
       sidebarWidth: mounted ? sidebarWidth : SIDEBAR_WIDTH.expanded,
     }),
-    [collapsed, mobileOpen, mounted, sidebarWidth, toggleCollapsed]
+    [collapsed, mobileOpen, mounted, sidebarWidth, toggleCollapsed],
   );
 
   return (

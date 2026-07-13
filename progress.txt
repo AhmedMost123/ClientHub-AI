@@ -1,73 +1,4 @@
-📍Our Roadmap From Here
-
-This is where ClientHub AI becomes a real SaaS.
-
-✅ Stage 1 (Current)
-Database Design ✅
-Prisma Setup ✅
-Migrations ✅
-Seed Data  ✅
-🔜 Stage 2
-
-Authentication
-
-Login ✅
-
-Register ✅
-
-JWT
-
-Password Hashing
-
-Protected Routes
-🔜 Stage 3
-
-Dashboard
-
-Statistics
-
-Recent Projects
-
-Notifications
-
-Upcoming Tasks
-🔜 Stage 4
-
-CRUD
-
-Clients
-
-Projects
-
-Tasks
-
-Invoices
-🔜 Stage 5
-
-AI Integration
-
-Chat
-
-Summaries
-
-Task Generation
-
-Project Suggestions
-🔜 Stage 6
-
-Deployment
-
-Vercel
-
-Supabase
-
-Environment Variables
-
-Domain
-
-CI/CD
-
-📍ClientHub AI Roadmap (Updated)
+📍 ClientHub AI Roadmap v2
 ✅ Stage 1 — Foundation (Done)
 Project Setup
 ✅ Next.js 16
@@ -75,239 +6,196 @@ Project Setup
 ✅ Tailwind CSS
 ✅ shadcn/ui
 ✅ Framer Motion
-✅ Theme System
-✅ Landing Page
-✅ Authentication UI
+Infrastructure
 ✅ PostgreSQL
 ✅ Prisma
-✅ Migrations
+✅ Database Migrations
 ✅ Seed Database
-🔜 Stage 2 — Authentication & Roles
+UI
+✅ Landing Page
+✅ Dashboard Layout
+✅ Theme System
+🔜 Stage 2 — Authentication
 
-This is where the app actually starts.
+Goal: Users can securely log in.
 
-Authentication
-Register
-Login
-Logout
-Password Hashing (bcrypt)
-JWT / Session Authentication
-Remember Me
-Forgot Password
-Email Validation (optional later)
-User Roles
+Backend
+Register ✅
+Login ✅
+Logout ✅
+Password Hashing ✅
+JWT / NextAuth Sessions ✅
+Role-based Authentication ✅
+Database ✅
+User
+- id
+- name
+- email
+- password
+- role
+- avatar
+Result
 
-Instead of one user type:
+✅ Freelancer can log in
 
-Freelancer
-Client
-Admin (future)
+✅ Client can log in
 
-Each user has:
+🔜 Stage 3 — Client & Project Management
 
-id
-name
-email
-password
-role
-avatar
-createdAt
+Goal: Freelancer can manage clients and projects.
 
-Learn:
-
-Authentication
-Authorization
-Middleware
-Route Protection
-Role-based Access Control (RBAC)
-🔜 Stage 3 — Workspaces & Client Portal
-
-This is the core of the SaaS.
-
-Freelancer Dashboard
-Overview
-Statistics
-Revenue
-Active Projects
-Deadlines
-Notifications
-AI Widget
-Client Dashboard
-
-Very minimal.
-
-Client can see:
-
-Assigned Projects
-Progress
-Files
-Messages
-Invoice Status
-
-Nothing else.
-
-Learn:
-
-Different layouts
-Conditional rendering
-Permissions
-🔜 Stage 4 — Core CRUD
 Clients
-Invite Client
-Edit Client
-Archive Client
+Create
+Edit
+Delete
+Archive
 Projects
 Create
 Edit
 Delete
 Status
-Due Date
 Budget
-Tasks
-Create
-Assign
-Complete
-Priority
 Due Date
-Invoices
-Draft
-Sent
-Paid
-Overdue
+Dashboard
 
-Learn:
+Replace fake data with real Prisma queries.
 
-Prisma Relations
-CRUD
-Validation
-Pagination
-Filtering
-Search
-🔜 Stage 5 — Client Collaboration
+🔜 Stage 4 — Project Workspace ⭐
 
-Now the project becomes interesting.
+This becomes the heart of the application.
 
-Messages
+Instead of thinking:
 
-Real-time chat
+Project → Messages
 
-Freelancer
+Think:
 
-↓
+Project Workspace
 
-Client
+├── Overview
+├── Chat
+├── Files
+├── Activity
 
-↓
+Every project has its own workspace.
 
-Reply
+Overview
+Project info
+Progress
+Budget
+Deadline
+Chat
 
-↓
+Shared conversation
 
-Seen
+Freelancer ↔ Client
 
-Learn:
+Files
 
-Socket.io
-Real-time Events
-Notifications
-File Sharing
+Upload
 
-Freelancer uploads
+Download
 
-↓
+Preview
 
-Client downloads
+Activity
 
-↓
-
-Client uploads revisions
-
-Learn:
-
-Supabase Storage
-Uploads
-Signed URLs
-File Permissions
-Activity Timeline
-
-Example
+Timeline
 
 Ahmed uploaded Homepage.fig
 
-2 minutes ago
+Client replied
 
-John commented
+Invoice marked Paid
+🔜 Stage 5 — Tasks & Progress
 
-5 minutes ago
+Inside every project:
 
-Invoice marked as Paid
+Tasks
 
-Yesterday
+Homepage
 
-Learn:
+☑ Hero
 
-Audit Logs
-Events
-Timelines
-🔜 Stage 6 — AI Features
+☑ Navbar
 
-Now AI becomes useful.
+☐ Footer
 
-Freelancer AI
-Write proposals
-Generate tasks
-Summarize conversations
-Rewrite messages
-Suggest deadlines
-Draft invoices
-Client AI
+☐ Contact Form
 
-Client can ask:
+Progress becomes automatic.
 
-What's the project status?
+2 / 4 completed
 
-When is delivery?
+↓
 
-What files have been uploaded?
+50%
 
-What invoices are pending?
+No manual progress slider.
 
-The AI answers using the project data.
+🔜 Stage 6 — Invoices
 
-Learn:
+Invoice
 
-OpenAI API
-RAG basics
-AI context
-Prompt engineering
+Draft
+
+↓
+
+Sent
+
+↓
+
+Paid
+
+Dashboard shows
+
+Revenue
+Pending
+Paid
+Overdue
 🔜 Stage 7 — Notifications
 
-Inside app
+Examples
 
-🔔 John sent a message
+New message
 
-🔔 New file uploaded
+New upload
 
-🔔 Invoice paid
+Invoice paid
 
-🔔 Deadline tomorrow
+Deadline tomorrow
 
-Later:
+Only in-app notifications for now.
 
-Email notifications
+🔜 Stage 8 — AI Assistant
 
-Learn:
+Inside the workspace.
 
-Notification System
-Event-driven Architecture
-🔜 Stage 8 — Settings
+Instead of random AI features:
+
+Project AI
+
+Examples
+
+Summarize chat
+
+Generate task list
+
+Rewrite message
+
+Generate invoice description
+
+Suggest deadline
+
+Uses project data as context.
+
+🔜 Stage 9 — Settings
 
 Freelancer
 
 Profile
 Company
 Branding
-Logo
 Theme
 Password
 
@@ -315,64 +203,208 @@ Client
 
 Profile
 Password
-Notifications
-🔜 Stage 9 — Deployment
-
+🔜 Stage 10 — Deployment
 Backend
-
 Supabase PostgreSQL
 Supabase Storage
-
 Frontend
-
 Vercel
-
-Other
-
+Production
 Environment Variables
-Production Build
 Security
 Domain
 CI/CD
-🗄️ Updated Database
 
-We'll move from a simple database to something like this:
+Development Order
 
-users
-│
-├── role
-├── avatar
-├── email
-└── password
+This is the order I'd follow from here:
 
-clients
-│
-└── userId
+✅ Authentication (finished)
+Client CRUD
+Project CRUD
+Replace dashboard fake data with Prisma
+Project Workspace (Overview page)
+Conversation system
+File upload & download
+Tasks with automatic progress
+Invoices
+Notifications
+AI features
+Deployment
 
-projects
-│
-├── freelancerId
-└── clientId
 
-tasks
-│
-└── projectId
 
-messages
-│
-├── senderId
-├── receiverId
-└── projectId
 
-files
-│
-├── projectId
-└── uploadedBy
+Project Goal
 
-invoices
-│
-└── projectId
+ClientHub AI is a project management platform for freelancers that helps them manage every client project in one workspace, whether or not the client has a ClientHub account. When a client is invited to the platform, the workspace becomes collaborative with chat, file sharing, and project updates.
 
-notifications
+In one sentence:
 
-activity_logs
+Instead of using WhatsApp, Google Drive, Trello, and Excel separately, a freelancer manages every client from one dashboard.
+
+Who uses it?
+
+Only two real users.
+
+1. Freelancer
+
+The owner of the workspace.
+
+Can:
+
+Manage clients
+Create projects
+Create tasks
+Chat with clients
+Upload files
+Send invoices
+Track deadlines
+Use AI assistant
+View revenue dashboard
+
+Think of them as the business owner.
+
+2. Client
+
+The client has a much simpler experience.
+
+They cannot manage the system.
+
+They can only access projects shared with them.
+
+They can:
+
+View project details
+Check project progress
+View completed tasks
+Download uploaded files
+Upload revisions
+Chat with freelancer
+View invoices
+Receive notifications
+
+That's it.
+
+User Flow
+Freelancer
+Login
+
+↓
+
+Dashboard
+
+↓
+
+Create Client
+
+↓
+
+Create Project
+
+↓
+
+Assign Client
+
+↓
+
+Project Workspace
+
+↓
+
+Chat
+Tasks
+Files
+Invoices
+
+↓
+
+Project Completed
+Client
+Login
+
+↓
+
+Dashboard
+
+↓
+
+My Projects
+
+↓
+
+Open Project
+
+↓
+
+View Progress
+
+↓
+
+Chat
+
+↓
+
+Upload Revision
+
+↓
+
+Download Deliverables
+
+↓
+
+Pay Invoice
+Example
+
+Imagine you're a freelance web developer.
+
+A client hires you to build a company website.
+
+Instead of
+
+WhatsApp
+
+Google Drive
+
+Email
+
+Excel
+
+Notion
+
+everything happens here.
+
+Freelancer creates
+Company Website
+
+Budget
+
+$1200
+
+Due Date
+
+20 Aug
+
+Client receives access.
+
+They log in.
+
+They immediately see
+
+Projects
+
+Company Website
+
+Open it.
+
+Inside
+
+Overview
+
+Chat
+
+Files
+
+Tasks
+
+Invoices

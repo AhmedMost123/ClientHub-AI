@@ -1,14 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LogOut, User } from "lucide-react";
 import { motion } from "framer-motion";
-
-import { Button } from "@/components/ui/button";
+import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { getRedirectPathForRole } from "@/lib/auth/redirects";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +19,10 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/login" });
+  };
 
   return (
     <motion.nav
@@ -82,20 +87,44 @@ export function Navbar() {
 
         {/* Right Buttons */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Login
-          </Link>
+          {status === "loading" ? (
+            <div className="size-8 animate-pulse rounded-full bg-muted" />
+          ) : session ? (
+            <>
+              <Link
+                href={getRedirectPathForRole(session.user?.role)}
+                className="inline-flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5 text-sm font-medium transition-all hover:-translate-y-0.5 hover:bg-muted/80"
+              >
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">{session.user?.name}</span>
+              </Link>
 
-          <Link
-            href="/register"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
-          >
-            Get Started
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2.5 text-sm font-medium text-destructive transition-all hover:-translate-y-0.5 hover:bg-destructive/20"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Login
+              </Link>
+
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:opacity-90"
+              >
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </motion.nav>

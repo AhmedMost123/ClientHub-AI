@@ -1,12 +1,17 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  FREELANCER
+  CLIENT
+  ADMIN
 }
 
 enum ClientStatus {
@@ -36,9 +41,15 @@ enum Priority {
   URGENT
 }
 
-enum Sender {
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE
+  SYSTEM
+}
+
+enum AISenderRole {
   USER
-  CLIENT
   AI
 }
 
@@ -62,38 +73,64 @@ enum NotificationType {
   ERROR
 }
 
+enum NotificationEvent {
+  NEW_MESSAGE
+  FILE_UPLOADED
+  TASK_ASSIGNED
+  INVOICE_PAID
+  PROJECT_COMPLETED
+}
+
+enum ActivityType {
+  MESSAGE_SENT
+  FILE_UPLOADED
+  TASK_CREATED
+  TASK_COMPLETED
+  PROJECT_CREATED
+  PROJECT_COMPLETED
+  INVOICE_SENT
+  INVOICE_PAID
+}
+
 model User {
   id        String    @id @default(cuid())
-  name      String
+  name      String     
   email     String    @unique
   password  String
+  role      UserRole  @default(FREELANCER)
   lastLogin DateTime?
   avatar    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  clients       Client[]
-  projects      Project[]
-  aiChats       AIChat[]
-  notifications Notification[]
-  settings      UserSettings?
+  // Profile Extension for Clients
+  clientProfile Client?
+
+  // Relations
+  freelancerProjects Project[]       @relation("FreelancerProjects")
+  createdTasks       Task[]          @relation("TaskCreator")
+  messages           Message[]
+  uploadedFiles      File[]
+  aiChats            AIChat[]
+  notifications      Notification[]
+  activityLogs       ActivityLog[]
+  settings           UserSettings?
 }
 
 model Client {
-  id      String       @id @default(cuid())
-  name    String
-  email   String       @unique
-  phone   String?
-  company String?
-  notes   String?
-  status  ClientStatus @default(LEAD)
+  id        String       @id @default(cuid())
+  company   String?
+  phone     String?
+  notes     String?      // Internal relationship tracking notes
+  status    ClientStatus @default(LEAD)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Soft Delete
 
-  userId   String
+  // Binds account auth (User) directly with relationship details (Client Profile)
+  userId   String    @unique
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   projects Project[]
 
@@ -104,7 +141,6 @@ model Project {
   id          String        @id @default(cuid())
   title       String
   description String?
-  progress    Int           @default(0)
   budget      Decimal?      @db.Decimal(10, 2)
   currency    String        @default("USD")
   status      ProjectStatus @default(PLANNING)
@@ -120,16 +156,20 @@ model Project {
   clientId String
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  freelancerId String
+  freelancer   User   @relation("FreelancerProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
 
-  tasks    Task[]
-  files    File[]
-  messages ProjectMessage[]
-  invoices Invoice[]
+  // Enforces strictly One Conversation per Project
+  conversation Conversation?
+
+  tasks         Task[]
+  files         File[]
+  invoices      Invoice[]
+  activityLogs  ActivityLog[]
+  notifications Notification[]
 
   @@index([clientId])
-  @@index([userId])
+  @@index([freelancerId])
 }
 
 model Task {
@@ -139,6 +179,7 @@ model Task {
   estimatedHours Int?
   status         TaskStatus @default(TODO)
   priority       Priority   @default(MEDIUM)
+  order          Int        @default(0) // Drag-and-drop indexing
 
   dueDate     DateTime?
   completedAt DateTime?
@@ -149,35 +190,67 @@ model Task {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  createdById String?
+  createdBy   User?   @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
   @@index([projectId])
+  @@index([createdById])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@index([projectId])
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  type      MessageType @default(TEXT)
+  content   String
+  isRead    Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  files File[]
+
+  @@index([conversationId])
+  @@index([senderId])
 }
 
 model File {
-  id         String   @id @default(cuid())
-  fileName   String
-  fileUrl    String
-  fileSize   Int
-  uploadedBy String
-  mimeType   String
-  uploadedAt DateTime @default(now())
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-}
-
-model ProjectMessage {
   id        String   @id @default(cuid())
-  sender    Sender
-  content   String
-  isRead    Boolean  @default(false)
+  name      String   // Clean shortened syntax
+  fileUrl   String
+  fileSize  Int
+  mimeType  String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  messageId String?
+  message   Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
   @@index([projectId])
+  @@index([uploadedById])
+  @@index([messageId])
 }
 
 model Invoice {
@@ -187,16 +260,34 @@ model Invoice {
   amount        Decimal       @db.Decimal(10, 2)
   currency      String        @default("USD")
   status        InvoiceStatus @default(DRAFT)
+  description   String?
+  notes         String?
 
   issueDate DateTime  @default(now())
   dueDate   DateTime?
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Soft Delete
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+}
+
+model ActivityLog {
+  id        String       @id @default(cuid())
+  action    ActivityType
+  createdAt DateTime     @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
 }
 
 model AIChat {
@@ -213,10 +304,10 @@ model AIChat {
 }
 
 model AIMessage {
-  id        String   @id @default(cuid())
-  role      Sender
+  id        String       @id @default(cuid())
+  role      AISenderRole
   content   String
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
 
   chatId String
   chat   AIChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
@@ -225,23 +316,28 @@ model AIMessage {
 }
 
 model Notification {
-  id        String           @id @default(cuid())
+  id        String            @id @default(cuid())
   title     String
   message   String
   link      String?
-  type      NotificationType
-  isRead    Boolean          @default(false)
-  createdAt DateTime         @default(now())
+  type      NotificationType  // UI state/color context (INFO, SUCCESS)
+  event     NotificationEvent // Backend operational trigger context
+  isRead    Boolean           @default(false)
+  createdAt DateTime          @default(now())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
   @@index([userId])
+  @@index([projectId])
 }
 
 model UserSettings {
   id          String   @id @default(cuid())
-  theme       Theme    @default(SYSTEM) // Fixed structural typing bug
+  theme       Theme    @default(SYSTEM)
   language    String   @default("en")
   emailAlerts Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -249,4 +345,4 @@ model UserSettings {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+}npx prisma migrate dev --name project-workspace-refactor

@@ -1,17 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { getRedirectPathForRole } from "@/lib/auth/redirects";
+import { LoginSchema, type LoginInput } from "@/lib/validations/auth";
 
 export function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginInput) => {
+    if (isSubmitting) return;
+
+    setServerError(null);
+
+    try {
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setServerError("Invalid email or password.");
+        return;
+      }
+
+      console.log(result);
+
+      if (result?.error) {
+        setServerError("Invalid email or password.");
+        return;
+      }
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch {
+      setServerError("Something went wrong. Please try again.");
+    }
+  };
 
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
       {/* Email Field */}
       <div className="space-y-2">
         <label
@@ -26,7 +76,13 @@ export function LoginForm() {
           placeholder="name@example.com"
           className="h-12 rounded-xl"
           aria-required
+          aria-invalid={!!errors.email}
+          disabled={isSubmitting}
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-sm text-destructive">{errors.email.message}</p>
+        )}
       </div>
 
       {/* Password Field */}
@@ -44,12 +100,16 @@ export function LoginForm() {
             placeholder="••••••••"
             className="h-12 rounded-xl pr-10"
             aria-required
+            aria-invalid={!!errors.password}
+            disabled={isSubmitting}
+            {...register("password")}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
             aria-label={showPassword ? "Hide password" : "Show password"}
+            disabled={isSubmitting}
           >
             {showPassword ? (
               <EyeOff className="size-5" />
@@ -58,6 +118,9 @@ export function LoginForm() {
             )}
           </button>
         </div>
+        {errors.password && (
+          <p className="text-sm text-destructive">{errors.password.message}</p>
+        )}
       </div>
 
       {/* Remember Me & Forgot Password */}
@@ -66,24 +129,39 @@ export function LoginForm() {
           <input
             type="checkbox"
             className="size-4 rounded border-border bg-background text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            disabled={isSubmitting}
           />
           <span className="text-muted-foreground">Remember me</span>
         </label>
         <a
-          href="#"
+          href="/forgot-password"
           className="text-sm font-medium text-primary hover:underline"
         >
           Forgot password?
         </a>
       </div>
 
+      {serverError && (
+        <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {serverError}
+        </p>
+      )}
+
       {/* Sign In Button */}
       <Button
         type="submit"
         className="h-12 w-full rounded-xl text-base transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
         style={{ background: "var(--gradient-brand)" }}
+        disabled={isSubmitting}
       >
-        Sign In
+        {isSubmitting ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Signing In...
+          </>
+        ) : (
+          "Sign In"
+        )}
       </Button>
 
       {/* Divider */}
@@ -103,14 +181,18 @@ export function LoginForm() {
         type="button"
         variant="outline"
         className="h-12 w-full rounded-xl text-base transition-all duration-200 hover:-translate-y-px"
+        disabled={isSubmitting}
       >
         Continue with Google
       </Button>
 
       {/* Create Account Link */}
       <p className="text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
-        <a href="/register" className="font-medium text-primary hover:underline">
+        Don&apos;t have an account?{" "}
+        <a
+          href="/register"
+          className="font-medium text-primary hover:underline"
+        >
           Create account
         </a>
       </p>

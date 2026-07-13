@@ -1,3 +1,4 @@
+import { requireFreelancer } from "@/lib/auth/authorization";
 import ActiveProjects from "@/components/dashboard/ActiveProjects";
 import { AIWidget } from "@/components/dashboard/AIWidget";
 import { CalendarPreview } from "@/components/dashboard/CalendarPreview";
@@ -11,7 +12,9 @@ import StatsOverview from "@/components/dashboard/StatsOverview";
 import { TaskProgressWidget } from "@/components/dashboard/TaskProgress";
 import { PageContainer } from "@/components/shared/PageContainer";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireFreelancer();
+
   return (
     <PageContainer className="space-y-8">
       <DashboardHeader />

@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { SidebarContent } from "@/components/layout/sidebar";
 import { useSidebar } from "@/components/layout/sidebar-provider";
@@ -11,12 +12,13 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { APP_USER } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 
 export default function Header() {
   const { collapsed, mobileOpen, setMobileOpen, toggleCollapsed } =
     useSidebar();
+  const { data: session } = useSession();
+  const userInitials = getInitials(session?.user?.name ?? "User");
 
   return (
     <>
@@ -68,7 +70,7 @@ export default function Header() {
               className="text-xs font-semibold text-white"
               style={{ background: "var(--gradient-brand)" }}
             >
-              {APP_USER.initials}
+              {userInitials}
             </AvatarFallback>
           </Avatar>
         </div>

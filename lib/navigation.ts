@@ -31,19 +31,34 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-export const mainNavigation: NavItem[] = [
+// Freelancer Navigation
+export const freelancerMainNavigation: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/projects", icon: FolderKanban, badge: 8 },
   { name: "Tasks", href: "/tasks", icon: CheckSquare, badge: 12 },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Messages", href: "/messages", icon: MessageSquare, badge: 3 },
-  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export const bottomNavigation: NavItem[] = [
+export const freelancerBottomNavigation: NavItem[] = [
   { name: "Support", href: "/support", icon: HelpCircle },
   { name: "AI Assistant", href: "/ai-assistant", icon: Sparkles },
 ];
+
+// Client Navigation
+export const clientMainNavigation: NavItem[] = [
+  { name: "Dashboard", href: "/client", icon: LayoutDashboard },
+  { name: "Projects", href: "/client/projects", icon: FolderKanban },
+  { name: "Messages", href: "/client/messages", icon: MessageSquare },
+];
+
+export const clientBottomNavigation: NavItem[] = [
+  { name: "Support", href: "/client/support", icon: HelpCircle },
+];
+
+// Legacy navigation (for backward compatibility)
+export const mainNavigation: NavItem[] = freelancerMainNavigation;
+export const bottomNavigation: NavItem[] = freelancerBottomNavigation;
 
 export const futureNavigation: NavGroup[] = [
   {
