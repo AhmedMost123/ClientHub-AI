@@ -94,7 +94,7 @@ enum ActivityType {
 
 model User {
   id        String    @id @default(cuid())
-  name      String     
+  name      String
   email     String    @unique
   password  String
   role      UserRole  @default(FREELANCER)
@@ -108,8 +108,9 @@ model User {
   clientProfile Client?
 
   // Relations
-  freelancerProjects Project[]       @relation("FreelancerProjects")
-  createdTasks       Task[]          @relation("TaskCreator")
+  freelancerProjects Project[]      @relation("FreelancerProjects")
+  sharedProjects     Project[]      @relation("SharedProjects")
+  createdTasks       Task[]         @relation("TaskCreator")
   messages           Message[]
   uploadedFiles      File[]
   aiChats            AIChat[]
@@ -119,57 +120,47 @@ model User {
 }
 
 model Client {
-  id        String       @id @default(cuid())
-  company   String?
-  phone     String?
-  notes     String?      // Internal relationship tracking notes
-  status    ClientStatus @default(LEAD)
+  id      String       @id @default(cuid())
+  company String?
+  phone   String?
+  notes   String? // Internal relationship tracking notes
+  status  ClientStatus @default(LEAD)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Soft Delete
 
   // Binds account auth (User) directly with relationship details (Client Profile)
-  userId   String    @unique
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects Project[]
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Project {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  budget      Decimal?      @db.Decimal(10, 2)
-  currency    String        @default("USD")
-  status      ProjectStatus @default(PLANNING)
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  customerName String // e.g. Microsoft, Globex, Sarah
+  budget       Float?
+  status       ProjectStatus @default(PLANNING)
+  dueDate      DateTime?
 
-  startDate   DateTime?
-  dueDate     DateTime?
-  completedAt DateTime?
+  ownerId String // Freelancer
+  owner   User   @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Soft Delete
-
-  clientId String
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-
-  freelancerId String
-  freelancer   User   @relation("FreelancerProjects", fields: [freelancerId], references: [id], onDelete: Cascade)
-
-  // Enforces strictly One Conversation per Project
-  conversation Conversation?
+  linkedClientId String? // Nullable
+  linkedClient   User?   @relation("SharedProjects", fields: [linkedClientId], references: [id])
 
   tasks         Task[]
   files         File[]
   invoices      Invoice[]
-  activityLogs  ActivityLog[]
+  conversation  Conversation?
+  activities    ActivityLog[]
   notifications Notification[]
 
-  @@index([clientId])
-  @@index([freelancerId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Task {
@@ -232,7 +223,7 @@ model Message {
 
 model File {
   id        String   @id @default(cuid())
-  name      String   // Clean shortened syntax
+  name      String // Clean shortened syntax
   fileUrl   String
   fileSize  Int
   mimeType  String
@@ -320,7 +311,7 @@ model Notification {
   title     String
   message   String
   link      String?
-  type      NotificationType  // UI state/color context (INFO, SUCCESS)
+  type      NotificationType // UI state/color context (INFO, SUCCESS)
   event     NotificationEvent // Backend operational trigger context
   isRead    Boolean           @default(false)
   createdAt DateTime          @default(now())
@@ -345,4 +336,4 @@ model UserSettings {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}npx prisma migrate dev --name project-workspace-refactor
+}

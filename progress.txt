@@ -42,58 +42,58 @@ Result
 
 ✅ Client authentication
 
-🔜 Stage 3 — Client Contacts & Project Management
+🔜 Stage 3 — Project Management
 Goal
 
-Freelancers can manage clients, create projects, and optionally connect platform clients.
+Freelancers can create and manage projects for any customer and optionally share projects with clients who use ClientHub.
 
-Client Contacts
-
-A client contact represents the real person or company the freelancer works with.
-
-A client contact does not need a ClientHub account.
-
-Features
-
-Create
-Edit
-Archive
-Delete
-Add company information
-Add notes
-Link platform account (optional)
-
-Example
-
-Microsoft
-Linked Account: None
-Sarah Johnson
-Linked Account: Sarah (ClientHub User)
 Projects
 
-Every project belongs to a Client Contact.
+Every project contains:
 
-Features
-
-Create
-Edit
-Delete
+Project Name
+Customer Name
+Description
 Status
 Budget
 Due Date
 
-Examples
+Optional
+
+Linked Client Account
+
+Example
 
 Company Website
-Mobile App
-Dashboard Redesign
+
+Customer:
+Microsoft
+
+Linked Client:
+None
+Landing Page
+
+Customer:
+Sarah Johnson
+
+Linked Client:
+Sarah (ClientHub User)
+Features
+Create Project
+Edit Project
+Delete Project
+Archive Project
+Update Status
+Budget
+Due Date
+Customer Name
+Link Existing Client (Optional)
 Dashboard
 
-Replace all fake dashboard data with real Prisma queries.
+Replace all dashboard mock data with Prisma queries.
 
+Updated Stage 4
 🔜 Stage 4 — Project Workspace ⭐
-
-This becomes the core of the application.
 
 Every project has its own workspace.
 
@@ -104,148 +104,262 @@ Project Workspace
 ├── Files
 ├── Invoices
 ├── Activity
-└── Chat (only when a client account is linked)
+└── Chat (optional)
+
+The workspace works in two modes.
+
+Private Workspace
+
+If no client is linked.
+
 Overview
 
-Displays
+Tasks
 
-Project Information
-Progress
-Budget
-Deadline
-Team Members
-Recent Activity
-Chat
-
-Available only when a platform client is linked.
-
-Shared conversation
-
-Freelancer ↔ Client
 Files
-Upload
-Download
-Preview
-Version History
 
-If the client is linked, both users can upload files.
+Invoices
 
 Activity
 
-Timeline example
+The freelancer manages everything privately.
+
+Shared Workspace
+
+If a client is linked.
+
+Overview
+
+Tasks
+
+Files
+
+Invoices
+
+Activity
+
+Chat
+
+Both freelancer and client can collaborate.
+
+Chat
+
+Available only when a client account is linked.
+
+Freelancer ↔ Client
+Files
+
+Freelancer
+
+Upload
+Download
+Preview
+
+If a client is linked:
+
+Client can also
+
+Upload revisions
+Download deliverables
+Activity
+
+Example
 
 Ahmed uploaded Homepage.fig
 
 ↓
 
-Client commented
+Sarah uploaded Revision.pdf
 
 ↓
 
-Invoice marked Paid
+Invoice Paid
 
 ↓
 
-Homepage approved
-🔜 Stage 5 — Tasks & Progress
-
-Each project contains tasks.
-
-Example
-
-Homepage
-
-☑ Hero
-
-☑ Navbar
-
-☐ Footer
-
-☐ Contact Form
-
-Project progress is calculated automatically.
-
-2 / 4 Completed
+Project Completed
+Updated Development Order
+✅ Authentication
 
 ↓
 
-50%
-
-No manual progress slider.
-
-🔜 Stage 6 — Invoices
-
-Invoice Workflow
-
-Draft
+Project CRUD
 
 ↓
 
-Sent
+Replace Dashboard with Prisma Data
 
 ↓
 
-Paid
+Project Workspace
 
-Dashboard Metrics
+↓
 
-Revenue
-Pending
-Paid
-Overdue
+Task Management
 
-Clients can view invoices for linked projects.
+↓
 
-🔜 Stage 7 — Notifications
+Conversation System
 
-In-App Notifications
+↓
 
-Examples
+File Upload & Download
 
-New message
-New file uploaded
-Invoice paid
-Deadline tomorrow
-Project completed
-🔜 Stage 8 — AI Assistant
+↓
 
-Every project has its own AI assistant.
+Invoices
 
-Instead of generic AI tools, AI understands the current project.
+↓
 
-Examples
+Notifications
 
-Summarize project activity
-Summarize chat
-Generate task list
-Rewrite client messages
-Generate invoice descriptions
-Suggest deadlines
-Generate project updates
+↓
 
-The AI uses project data as context.
+AI Assistant
 
-🔜 Stage 9 — Settings
+↓
+
+Deployment
+
+Notice there is no Client CRUD anymore because the customer is simply part of the project.
+
+Updated User Flow
 Freelancer
-Profile
-Company Information
-Branding
-Theme
-Password
+Login
+
+↓
+
+Dashboard
+
+↓
+
+Create Project
+
+↓
+
+Enter Customer Name
+
+↓
+
+(Optional)
+Grant Project Access
+to Existing Client
+
+↓
+
+Project Workspace
+
+↓
+
+Overview
+Tasks
+Files
+Invoices
+Activity
+
+↓
+
+(Chat becomes available if a client is linked)
+
+↓
+
+Project Completed
 Client
-Profile
-Password
-🔜 Stage 10 — Deployment
-Backend
-Supabase PostgreSQL
-Supabase Storage
-Frontend
-Vercel
-Production
-Environment Variables
-Security
-Custom Domain
-CI/CD
+Login
+
+↓
+
+Dashboard
+
+↓
+
+Shared Projects
+
+↓
+
+Open Project
+
+↓
+
+View Progress
+
+↓
+
+Chat
+
+↓
+
+Upload Files
+
+↓
+
+Download Deliverables
+
+↓
+
+View Invoices
+Updated Real-World Example
+Example 1 – Offline Customer
+
+Ahmed creates a project.
+
+Project
+
+Company Website
+
+Customer
+
+Microsoft
+
+Linked Client
+
+None
+
+Microsoft never creates a ClientHub account.
+
+Ahmed still manages:
+
+Tasks
+Files
+Budget
+Deadlines
+Invoices
+AI Assistant
+
+Everything works normally.
+
+Example 2 – ClientHub Customer
+
+Ahmed creates another project.
+
+Project
+
+Landing Page
+
+Customer
+
+Sarah Johnson
+
+Linked Client
+
+Sarah
+
+Sarah already has a ClientHub account.
+
+Ahmed grants her access.
+
+The project instantly becomes collaborative.
+
+Sarah can:
+
+View project progress
+Chat with Ahmed
+Upload revisions
+Download files
+View invoices
+Receive notifications
+
+The project itself does not change—only collaboration features become available.
 
 ✅ Authentication (finished)
 Client CRUD
