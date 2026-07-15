@@ -8,10 +8,15 @@ import { Button } from "@/components/ui/button";
 
 import { ProjectEmptyState } from "@/components/projects/ProjectEmptyState";
 import ProjectGrid from "@/components/projects/ProjectGrid";
+import { ProjectArchiveFilter } from "@/components/projects/ProjectArchiveFilter";
 
 import { getProjects } from "@/lib/actions/get-projects";
 
-export default async function ProjectsPage() {
+interface ProjectsPageProps {
+  searchParams: { archived?: string };
+}
+
+export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
   const session = await auth();
 
   if (!session?.user) {
@@ -19,8 +24,11 @@ export default async function ProjectsPage() {
   }
 
   const role = session.user.role === "CLIENT" ? "CLIENT" : "FREELANCER";
+  
+  const params = await searchParams;
+  const includeArchived = params.archived === "true";
 
-  const result = await getProjects();
+  const result = await getProjects({ includeArchived });
 
   if (!result.success) {
     return (
@@ -36,9 +44,12 @@ export default async function ProjectsPage() {
     <PageContainer className="space-y-8">
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
-            Projects
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground">
+              Projects
+            </h1>
+            <ProjectArchiveFilter defaultArchived={includeArchived} />
+          </div>
           <p className="mt-2 text-sm text-muted-foreground">
             {role === "FREELANCER"
               ? "Manage all your customer projects and active work."
@@ -60,7 +71,7 @@ export default async function ProjectsPage() {
       {projects.length === 0 ? (
         <ProjectEmptyState role={role} />
       ) : (
-        <ProjectGrid projects={projects} />
+        <ProjectGrid projects={projects} role={role} />
       )}
     </PageContainer>
   );

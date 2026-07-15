@@ -59,10 +59,9 @@ export function HeroPreview() {
               project={{
                 id: "1",
                 title: "Acme Corp Redesign",
-                client: "Acme Corp",
-                progress: 75,
-                deadline: "3 days",
-                status: "in-progress",
+                customerName: "Acme Corp",
+                status: "IN_PROGRESS",
+                dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
               }}
             />
           </div>

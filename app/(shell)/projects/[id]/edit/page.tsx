@@ -11,13 +11,14 @@ interface EditProjectPageProps {
 }
 
 export default async function EditProjectPage({ params }: EditProjectPageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
     redirect("/login");
   }
 
-  const result = await getProject(params.id);
+  const result = await getProject(id);
 
   if (!result.success) {
     if (result.error === "Forbidden") {
@@ -32,7 +33,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-12 pt-4">
       <Link
-        href={`/projects/${params.id}`}
+        href={`/projects/${id}`}
         className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="mr-2 size-4" />

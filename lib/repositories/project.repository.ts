@@ -51,6 +51,16 @@ export const projectRepository = {
     });
   },
 
+  async restoreProject(id: string) {
+    return prisma.project.update({
+      where: { id },
+      data: {
+        isArchived: false,
+        archivedAt: null,
+      },
+    });
+  },
+
   async findProjectById(id: string) {
     return prisma.project.findUnique({
       where: { id },
@@ -117,6 +127,7 @@ export const projectRepository = {
     filters?: {
       status?: ProjectStatus;
       isArchived?: boolean;
+      includeArchived?: boolean;
     },
   ) {
     return prisma.project.findMany({
@@ -125,9 +136,11 @@ export const projectRepository = {
         ...(filters?.status && {
           status: filters.status,
         }),
-        ...(filters?.isArchived !== undefined
-          ? { isArchived: filters.isArchived }
-          : { isArchived: false }),
+        ...(filters?.includeArchived 
+          ? {} 
+          : filters?.isArchived !== undefined
+            ? { isArchived: filters.isArchived }
+            : { isArchived: false }),
       },
 
       include: projectCardInclude,
@@ -138,11 +151,11 @@ export const projectRepository = {
     });
   },
 
-  async findProjectsForClient(clientId: string) {
+  async findProjectsForClient(clientId: string, filters?: { includeArchived?: boolean }) {
     return prisma.project.findMany({
       where: {
         linkedClientId: clientId,
-        isArchived: false,
+        ...(filters?.includeArchived ? {} : { isArchived: false }),
       },
 
       include: projectCardInclude,

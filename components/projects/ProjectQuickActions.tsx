@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Archive, Edit, Files, MessageSquare, Trash2 } from "lucide-react";
+import { Archive, Edit, Files, MessageSquare, Trash2, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
 
 import { archiveProject } from "@/lib/actions/archive-project";
 import { deleteProject } from "@/lib/actions/delete-project";
+import { restoreProject } from "@/lib/actions/restore-project";
 
 interface Props {
   role: "CLIENT" | "FREELANCER";
@@ -32,6 +33,7 @@ interface Props {
 export default function ProjectQuickActions({ role, project }: Props) {
   const router = useRouter();
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -41,12 +43,25 @@ export default function ProjectQuickActions({ role, project }: Props) {
       const result = await archiveProject(project.id);
       if (result.success) {
         toast.success("Project archived successfully");
-        router.refresh();
       } else {
         toast.error(result.error || "Failed to archive project");
       }
     } finally {
       setIsArchiving(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    try {
+      const result = await restoreProject(project.id);
+      if (result.success) {
+        toast.success("Project restored successfully");
+      } else {
+        toast.error(result.error || "Failed to restore project");
+      }
+    } finally {
+      setIsRestoring(false);
     }
   };
 
@@ -61,7 +76,7 @@ export default function ProjectQuickActions({ role, project }: Props) {
         toast.error(result.error || "Failed to delete project");
         setIsDeleting(false);
       }
-    } catch (e) {
+    } catch {
       setIsDeleting(false);
     }
   };
@@ -92,15 +107,26 @@ export default function ProjectQuickActions({ role, project }: Props) {
           Files
         </Button>
 
-        {role === "FREELANCER" && !project.isArchived && (
-          <Button 
-            variant="outline" 
-            onClick={handleArchive} 
-            disabled={isArchiving}
-          >
-            <Archive className="mr-2 size-4" />
-            {isArchiving ? "Archiving..." : "Archive Project"}
-          </Button>
+        {role === "FREELANCER" && (
+          project.isArchived ? (
+            <Button 
+              variant="outline" 
+              onClick={handleRestore} 
+              disabled={isRestoring}
+            >
+              <RotateCcw className="mr-2 size-4" />
+              {isRestoring ? "Restoring..." : "Restore Project"}
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              onClick={handleArchive} 
+              disabled={isArchiving}
+            >
+              <Archive className="mr-2 size-4" />
+              {isArchiving ? "Archiving..." : "Archive Project"}
+            </Button>
+          )
         )}
 
         {role === "FREELANCER" && (

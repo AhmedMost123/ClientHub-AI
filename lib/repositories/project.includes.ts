@@ -17,6 +17,12 @@ export const projectCardInclude = {
     },
   },
 
+  tasks: {
+    select: {
+      status: true,
+    },
+  },
+
   _count: {
     select: {
       tasks: true,

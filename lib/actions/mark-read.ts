@@ -1,4 +1,5 @@
 "use server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { auth } from "@/auth";
 import { projectRepository } from "@/lib/repositories/project.repository";

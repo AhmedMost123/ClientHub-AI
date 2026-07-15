@@ -19,13 +19,14 @@ interface ProjectDetailsPageProps {
 export default async function ProjectDetailsPage({
   params,
 }: ProjectDetailsPageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
     redirect("/login");
   }
 
-  const result = await getProject(params.id);
+  const result = await getProject(id);
 
   if (!result.success) {
     if (result.error === "Forbidden") {

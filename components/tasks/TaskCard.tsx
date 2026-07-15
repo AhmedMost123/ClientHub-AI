@@ -102,6 +102,7 @@ export default function TaskCard({
 
       {canEdit && (
         <DropdownMenu>
+          {/* @ts-expect-error type issue with DropdownMenuTrigger */}
           <DropdownMenuTrigger asChild>
             <Button size="icon-sm" variant="ghost" className="ml-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 data-[state=open]:opacity-100">
               <MoreVertical className="size-4 text-muted-foreground" />

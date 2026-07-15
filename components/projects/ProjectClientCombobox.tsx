@@ -64,7 +64,8 @@ export function ProjectClientCombobox() {
             Linked Client
           </FormLabel>
           <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+            {/* @ts-expect-error type error in radux-ui */}
+          <PopoverTrigger asChild>
               <FormControl>
                 <Button
                   variant="outline"

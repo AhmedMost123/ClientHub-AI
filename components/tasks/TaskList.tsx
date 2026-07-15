@@ -174,7 +174,16 @@ export default function TaskList({ tasks, projectId, canEdit = false }: Props) {
             onOpenChange={setDialogOpen}
             onSubmit={handleSaveTask}
             projectId={projectId}
-            defaultValues={editingTask || undefined}
+            defaultValues={
+              editingTask
+                ? {
+                    ...editingTask,
+                    description: editingTask.description ?? undefined,
+                    estimatedHours: editingTask.estimatedHours ?? undefined,
+                    dueDate: editingTask.dueDate ?? undefined,
+                  }
+                : undefined
+            }
           />
 
           <DeleteTaskDialog

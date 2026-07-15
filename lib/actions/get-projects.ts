@@ -8,6 +8,7 @@ import { ProjectStatus } from "@prisma/client";
 export async function getProjects(filters?: {
   status?: ProjectStatus;
   isArchived?: boolean;
+  includeArchived?: boolean;
 }) {
   try {
     const session = await auth();
@@ -18,7 +19,7 @@ export async function getProjects(filters?: {
 
     const projects =
       session.user.role === "CLIENT"
-        ? await projectRepository.findProjectsForClient(session.user.id)
+        ? await projectRepository.findProjectsForClient(session.user.id, filters)
         : await projectRepository.findProjects(session.user.id, filters);
 
     return success(projects);

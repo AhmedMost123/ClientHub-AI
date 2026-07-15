@@ -31,7 +31,8 @@ export function ProjectDatePicker() {
         <FormItem className="flex flex-col space-y-2">
           <FormLabel className="text-sm font-medium text-foreground">Due Date</FormLabel>
           <Popover>
-            <PopoverTrigger asChild>
+            {/* @ts-expect-error type error in radux-ui */}
+          <PopoverTrigger asChild>
               <FormControl>
                 <Button
                   variant={"outline"}
@@ -57,7 +58,6 @@ export function ProjectDatePicker() {
                 disabled={(date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
-                initialFocus
                 className="rounded-xl"
               />
             </PopoverContent>

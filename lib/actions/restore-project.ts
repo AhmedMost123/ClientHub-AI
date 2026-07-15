@@ -5,7 +5,7 @@ import { projectRepository } from "@/lib/repositories/project.repository";
 import { success, failure } from "./action-result";
 import { revalidatePath } from "next/cache";
 
-export async function archiveProject(projectId: string) {
+export async function restoreProject(projectId: string) {
   try {
     const session = await auth();
 
@@ -19,7 +19,7 @@ export async function archiveProject(projectId: string) {
     }
 
     if (session.user.role === "CLIENT") {
-      return failure("Clients cannot archive projects");
+      return failure("Clients cannot restore projects");
     }
 
     if (
@@ -29,18 +29,19 @@ export async function archiveProject(projectId: string) {
       return failure("Forbidden");
     }
 
-    await projectRepository.archiveProject(projectId);
+    await projectRepository.restoreProject(projectId);
 
     revalidatePath("/projects", "layout");
     revalidatePath(`/projects/${projectId}`, "layout");
-    return success(projectId, "Project archived successfully");
+    
+    return success(projectId, "Project restored successfully");
   } catch (error: unknown) {
-    console.error("Failed to archive project:", error);
+    console.error("Failed to restore project:", error);
 
     if (error instanceof Error) {
       return failure(error.message);
     }
 
-    return failure("Failed to archive project");
+    return failure("Failed to restore project");
   }
 }

@@ -1,4 +1,5 @@
 "use server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { auth } from "@/auth";
 import { taskRepository } from "@/lib/repositories/task.repository";

@@ -23,7 +23,7 @@ export default function DeleteTaskButton({ taskId, projectId }: Props) {
       disabled={pending}
       onClick={() =>
         startTransition(async () => {
-          await deleteTask(taskId, projectId);
+          await deleteTask(taskId);
         })
       }
     >
