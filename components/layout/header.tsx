@@ -83,7 +83,8 @@ export default function Header() {
           className="w-[min(100vw-2rem,280px)] border-sidebar-border bg-sidebar p-0"
         >
           <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-          <SidebarContent onNavigate={() => setMobileOpen(false)} />
+          <SidebarContent session={session} onNavigate={() => setMobileOpen(false)} />
+
         </SheetContent>
       </Sheet>
     </>

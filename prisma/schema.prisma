@@ -141,16 +141,20 @@ model Project {
   id           String        @id @default(cuid())
   title        String
   description  String?
-  customerName String // e.g. Microsoft, Globex, Sarah
+  customerName String
   budget       Float?
   status       ProjectStatus @default(PLANNING)
   dueDate      DateTime?
 
-  ownerId String // Freelancer
-  owner   User   @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+  /// NEW
+  isArchived   Boolean       @default(false)
+  archivedAt   DateTime?
 
-  linkedClientId String? // Nullable
-  linkedClient   User?   @relation("SharedProjects", fields: [linkedClientId], references: [id])
+  ownerId String
+  owner   User @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  linkedClientId String?
+  linkedClient   User? @relation("SharedProjects", fields: [linkedClientId], references: [id])
 
   tasks         Task[]
   files         File[]
@@ -161,6 +165,11 @@ model Project {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([linkedClientId])
+  @@index([status])
+  @@index([isArchived])
 }
 
 model Task {

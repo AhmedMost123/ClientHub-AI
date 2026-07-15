@@ -11,7 +11,7 @@ async function main() {
   await prisma.aIMessage.deleteMany();
   await prisma.aIChat.deleteMany();
   await prisma.invoice.deleteMany();
-  await prisma.projectMessage.deleteMany();
+  await prisma.message.deleteMany();
   await prisma.file.deleteMany();
   await prisma.task.deleteMany();
   await prisma.project.deleteMany();
@@ -48,60 +48,30 @@ async function main() {
   await prisma.client.createMany({
     data: [
       {
-        name: "TechNova",
-        email: "contact@technova.com",
         company: "TechNova",
         phone: "+1 555 111",
-
         status: "ACTIVE",
-
         userId: user.id,
       },
-
       {
-        name: "Green Restaurant",
-        email: "owner@green.com",
         company: "Green Restaurant",
         phone: "+1 555 222",
-
         status: "ACTIVE",
-
         userId: user.id,
       },
-
       {
-        name: "Alpha Fitness",
-
-        email: "contact@alpha.com",
-
         company: "Alpha Fitness",
-
         status: "LEAD",
-
         userId: user.id,
       },
-
       {
-        name: "Creative Studio",
-
-        email: "studio@creative.com",
-
         company: "Creative Studio",
-
         status: "ACTIVE",
-
         userId: user.id,
       },
-
       {
-        name: "Vision Agency",
-
-        email: "hello@vision.com",
-
         company: "Vision Agency",
-
         status: "INACTIVE",
-
         userId: user.id,
       },
     ],
@@ -119,12 +89,10 @@ async function main() {
       title: "Company Website",
       description: "Modern responsive website",
       budget: 2500,
-      currency: "USD",
       status: "IN_PROGRESS",
-      progress: 35,
       dueDate: new Date("2026-08-15"),
-      clientId: clients[0].id,
-      userId: user.id,
+      customerName: "TechNova",
+      ownerId: user.id,
     },
   });
 
@@ -133,12 +101,10 @@ async function main() {
       title: "E-Commerce Store",
       description: "Online shopping platform",
       budget: 4200,
-      currency: "USD",
       status: "PLANNING",
-      progress: 10,
       dueDate: new Date("2026-09-01"),
-      clientId: clients[1].id,
-      userId: user.id,
+      customerName: "Green Restaurant",
+      ownerId: user.id,
     },
   });
 
@@ -147,12 +113,10 @@ async function main() {
       title: "Admin Dashboard",
       description: "Internal dashboard",
       budget: 1800,
-      currency: "USD",
       status: "IN_PROGRESS",
-      progress: 60,
       dueDate: new Date("2026-08-30"),
-      clientId: clients[2].id,
-      userId: user.id,
+      customerName: "Alpha Fitness",
+      ownerId: user.id,
     },
   });
 
@@ -233,67 +197,7 @@ async function main() {
 
   console.log("✅ Tasks created");
 
-  await prisma.file.createMany({
-    data: [
-      {
-        fileName: "contract.pdf",
-        fileUrl: "/uploads/contract.pdf",
-        fileSize: 120450,
-        mimeType: "application/pdf",
-        uploadedBy: "Ahmed",
-        projectId: project1.id,
-      },
-      {
-        fileName: "wireframe.png",
-        fileUrl: "/uploads/wireframe.png",
-        fileSize: 502320,
-        mimeType: "image/png",
-        uploadedBy: "Ahmed",
-        projectId: project1.id,
-      },
-      {
-        fileName: "logo.svg",
-        fileUrl: "/uploads/logo.svg",
-        fileSize: 15420,
-        mimeType: "image/svg+xml",
-        uploadedBy: "Ahmed",
-        projectId: project2.id,
-      },
-    ],
-  });
-
-  console.log("✅ Files created");
-  await prisma.projectMessage.createMany({
-    data: [
-      {
-        sender: "CLIENT",
-        content: "Can we launch before Friday?",
-        projectId: project1.id,
-      },
-      {
-        sender: "USER",
-        content: "Yes, I'm finishing the final pages today.",
-        projectId: project1.id,
-      },
-      {
-        sender: "CLIENT",
-        content: "The homepage looks great!",
-        projectId: project1.id,
-      },
-      {
-        sender: "CLIENT",
-        content: "Please update the pricing section.",
-        projectId: project2.id,
-      },
-      {
-        sender: "USER",
-        content: "I'll push the update tonight.",
-        projectId: project2.id,
-      },
-    ],
-  });
-
-  console.log("✅ Project messages created");
+  console.log("ℹ️ Skipping file and message seeding (schema refactored)");
 
   await prisma.invoice.createMany({
     data: [
@@ -368,24 +272,28 @@ async function main() {
         title: "Project Completed",
         message: "Company Website has been completed.",
         type: "SUCCESS",
+        event: "PROJECT_COMPLETED",
         userId: user.id,
       },
       {
         title: "Invoice Paid",
         message: "Invoice INV-2026-0001 has been paid.",
         type: "SUCCESS",
+        event: "INVOICE_PAID",
         userId: user.id,
       },
       {
         title: "New Client",
         message: "Creative Studio has been added.",
         type: "INFO",
+        event: "TASK_ASSIGNED",
         userId: user.id,
       },
       {
         title: "Task Due Soon",
         message: "Shopping Cart is due tomorrow.",
         type: "WARNING",
+        event: "TASK_ASSIGNED",
         userId: user.id,
       },
     ],

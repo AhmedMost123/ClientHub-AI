@@ -41,12 +41,16 @@ export function ClientMessages() {
               <div className="flex items-center justify-between gap-2">
                 <p className="text-sm font-medium">{message.senderName}</p>
                 <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {message.time}
+                  {new Date(message.timestamp).toLocaleDateString([], {
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                {message.preview}
+                {message.content}
               </p>
+
             </div>
           </div>
         ))}

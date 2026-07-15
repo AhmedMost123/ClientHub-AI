@@ -16,6 +16,7 @@ npx prisma validate
 npx prisma format
 npx prisma generate
 npx prisma migrate dev --name init
+then restart vscode
 
 npx prisma migrate reset
 
