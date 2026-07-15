@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { ProjectStatus } from "@prisma/client";
+
+import { Prisma, ProjectStatus } from "@prisma/client";
 import { CreateProjectInput } from "@/lib/validations/project";
+import { projectCardInclude } from "./project.includes";
 
 export const projectRepository = {
   async createProject(userId: string, data: CreateProjectInput) {
@@ -66,16 +68,45 @@ export const projectRepository = {
     return prisma.project.findUnique({
       where: { id },
       include: {
-        owner: { select: { id: true, name: true, email: true, avatar: true } },
+        owner: {
+          select: { id: true, name: true, email: true, avatar: true },
+        },
         linkedClient: {
           select: { id: true, name: true, email: true, avatar: true },
         },
-        tasks: { orderBy: { order: "asc" } },
-        files: { orderBy: { createdAt: "desc" } },
-        invoices: { orderBy: { createdAt: "desc" } },
+        tasks: {
+          orderBy: { order: "asc" },
+        },
+        files: {
+          orderBy: { createdAt: "desc" },
+        },
+        invoices: {
+          orderBy: { createdAt: "desc" },
+        },
         activities: {
           orderBy: { createdAt: "desc" },
-          include: { user: { select: { name: true, avatar: true } } },
+          include: {
+            user: { select: { name: true, avatar: true } },
+          },
+        },
+        // Integrated conversation block
+        conversation: {
+          include: {
+            messages: {
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "asc",
+              },
+            },
+          },
         },
       },
     });
@@ -83,38 +114,42 @@ export const projectRepository = {
 
   async findProjects(
     ownerId: string,
-    filters?: { status?: ProjectStatus; isArchived?: boolean },
+    filters?: {
+      status?: ProjectStatus;
+      isArchived?: boolean;
+    },
   ) {
     return prisma.project.findMany({
       where: {
         ownerId,
-        ...(filters?.status && { status: filters.status }),
+        ...(filters?.status && {
+          status: filters.status,
+        }),
         ...(filters?.isArchived !== undefined
           ? { isArchived: filters.isArchived }
           : { isArchived: false }),
       },
-      include: {
-        linkedClient: { select: { id: true, name: true, avatar: true } },
-        _count: { select: { tasks: true } },
+
+      include: projectCardInclude,
+
+      orderBy: {
+        createdAt: "desc",
       },
-      orderBy: { createdAt: "desc" },
     });
   },
 
   async findProjectsForClient(clientId: string) {
     return prisma.project.findMany({
       where: {
-        OR: [
-          { linkedClientId: clientId },
-          { ownerId: clientId }, // Client requested projects
-        ],
+        linkedClientId: clientId,
         isArchived: false,
       },
-      include: {
-        owner: { select: { id: true, name: true, avatar: true } },
-        _count: { select: { tasks: true } },
+
+      include: projectCardInclude,
+
+      orderBy: {
+        createdAt: "desc",
       },
-      orderBy: { createdAt: "desc" },
     });
   },
 
@@ -122,6 +157,88 @@ export const projectRepository = {
     return prisma.project.update({
       where: { id },
       data: { status },
+    });
+  },
+  async findConversation(projectId: string) {
+    return prisma.conversation.findUnique({
+      where: {
+        projectId,
+      },
+
+      include: {
+        messages: {
+          include: {
+            sender: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+      },
+    });
+  },
+  async createConversation(projectId: string) {
+    return prisma.conversation.create({
+      data: {
+        projectId,
+      },
+      include: {
+        messages: {
+          include: {
+            sender: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+      },
+    });
+  },
+
+  async sendMessage(conversationId: string, senderId: string, content: string) {
+    return prisma.message.create({
+      data: {
+        conversationId,
+        senderId,
+        content,
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+  },
+
+  async markConversationAsRead(conversationId: string, userId: string) {
+    return prisma.message.updateMany({
+      where: {
+        conversationId,
+        senderId: {
+          not: userId,
+        },
+        isRead: false,
+      },
+      data: {
+        isRead: true,
+      },
     });
   },
 };

@@ -22,7 +22,10 @@ export async function deleteProject(projectId: string) {
       return failure("Clients cannot delete projects");
     }
 
-    if (session.user.role === "FREELANCER" && project.ownerId !== session.user.id) {
+    if (
+      session.user.role === "FREELANCER" &&
+      project.ownerId !== session.user.id
+    ) {
       return failure("Forbidden");
     }
 
@@ -30,8 +33,13 @@ export async function deleteProject(projectId: string) {
 
     revalidatePath("/projects");
     return success(projectId, "Project deleted successfully");
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to delete project:", error);
+
+    if (error instanceof Error) {
+      return failure(error.message);
+    }
+
     return failure("Failed to delete project");
   }
 }

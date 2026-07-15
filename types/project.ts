@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ProjectStatus, Prisma } from "@prisma/client";
+import type { projectCardInclude } from "@/lib/repositories/project.includes";
 
 export const CreateProjectSchema = z.object({
   title: z
@@ -30,18 +31,5 @@ export type CreateProjectInput = z.infer<typeof CreateProjectSchema>;
 
 export type UpdateProjectInput = z.infer<typeof UpdateProjectSchema>;
 export type ProjectCardData = Prisma.ProjectGetPayload<{
-  include: {
-    linkedClient: {
-      select: {
-        id: true;
-        name: true;
-        avatar: true;
-      };
-    };
-    _count: {
-      select: {
-        tasks: true;
-      };
-    };
-  };
+  include: typeof projectCardInclude;
 }>;
