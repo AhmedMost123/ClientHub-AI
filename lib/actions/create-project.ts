@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { projectRepository } from "@/lib/repositories/project.repository";
 import { CreateProjectSchema } from "@/lib/validations/project";
 
 export async function createProject(data: unknown) {
@@ -17,18 +17,5 @@ export async function createProject(data: unknown) {
     throw new Error("Invalid project data.");
   }
 
-  const project = await prisma.project.create({
-    data: {
-      title: validated.data.title,
-      description: validated.data.description,
-      customerName: validated.data.customerName,
-      budget: validated.data.budget,
-      dueDate: validated.data.dueDate,
-      status: validated.data.status,
-      linkedClientId: validated.data.linkedClientId || null,
-      ownerId: session.user.id,
-    },
-  });
-
-  return project;
+  return projectRepository.createProject(session.user.id, validated.data);
 }

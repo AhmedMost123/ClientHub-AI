@@ -28,6 +28,13 @@ enum ProjectStatus {
   CANCELLED
 }
 
+enum ProjectInvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
 enum TaskStatus {
   TODO
   IN_PROGRESS
@@ -79,8 +86,11 @@ enum NotificationEvent {
   TASK_ASSIGNED
   INVOICE_PAID
   PROJECT_COMPLETED
-}
 
+  PROJECT_INVITATION
+  PROJECT_INVITATION_ACCEPTED
+  PROJECT_INVITATION_DECLINED
+}
 enum ActivityType {
   MESSAGE_SENT
   FILE_UPLOADED
@@ -120,6 +130,10 @@ model User {
   notifications      Notification[]
   activityLogs       ActivityLog[]
   settings           UserSettings?
+
+  sentProjectInvitations ProjectInvitation[] @relation("SentProjectInvitations")
+
+receivedProjectInvitations ProjectInvitation[] @relation("ReceivedProjectInvitations")
 }
 
 model Client {
@@ -165,6 +179,7 @@ model Project {
   conversation  Conversation?
   activities    ActivityLog[]
   notifications Notification[]
+  invitations   ProjectInvitation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -216,7 +231,7 @@ model Conversation {
 model Message {
   id        String      @id @default(cuid())
   type      MessageType @default(TEXT)
-  content   String
+  content   String?
   isRead    Boolean     @default(false)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -234,23 +249,37 @@ model Message {
 }
 
 model File {
-  id        String   @id @default(cuid())
-  name      String // Clean shortened syntax
-  fileUrl   String
-  fileSize  Int
-  mimeType  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
 
-  uploadedById String
-  uploadedBy   User   @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  /// Random filename stored in Supabase
+  name          String
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Original filename shown in the UI
+  originalName  String
 
-  messageId String?
-  message   Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  fileUrl       String
 
+  fileSize      Int
+
+  mimeType      String
+
+  storagePath   String
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  uploadedById  String
+  uploadedBy    User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  projectId     String
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  messageId      String?
+  message        Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  isDeleted      Boolean @default(false)
+  deletedAt      DateTime?
+ 
   @@index([projectId])
   @@index([uploadedById])
   @@index([messageId])
@@ -320,24 +349,31 @@ model AIMessage {
 
 model Notification {
   id        String            @id @default(cuid())
+
   title     String
   message   String
   link      String?
-  type      NotificationType // UI state/color context (INFO, SUCCESS)
-  event     NotificationEvent // Backend operational trigger context
+
+  type      NotificationType
+  event     NotificationEvent
+
   isRead    Boolean           @default(false)
+
+  // NEW
+  isHandled Boolean           @default(false)
+  handledAt DateTime?
+
   createdAt DateTime          @default(now())
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([projectId])
 }
-
 model UserSettings {
   id          String   @id @default(cuid())
   theme       Theme    @default(SYSTEM)
@@ -348,4 +384,21 @@ model UserSettings {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProjectInvitation {
+  id           String                  @id @default(cuid())
+  projectId    String
+  project      Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  freelancerId String
+  freelancer   User                    @relation("SentProjectInvitations", fields: [freelancerId], references: [id], onDelete: Cascade)
+  clientId     String
+  client       User                    @relation("ReceivedProjectInvitations", fields: [clientId], references: [id], onDelete: Cascade)
+  status       ProjectInvitationStatus @default(PENDING)
+  createdAt    DateTime                @default(now())
+  respondedAt  DateTime?
+
+  @@index([projectId])
+  @@index([freelancerId])
+  @@index([clientId])
 }

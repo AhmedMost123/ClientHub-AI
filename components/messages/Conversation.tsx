@@ -14,12 +14,19 @@ interface Props {
   conversation: {
     messages: {
       id: string;
-      content: string;
+      content: string | null;
       createdAt: Date;
       sender: {
         id: string;
         name: string | null;
       };
+      files: {
+        id: string;
+        originalName: string;
+        fileUrl: string;
+        fileSize: number;
+        mimeType: string;
+      }[];
     }[];
   } | null;
 }
@@ -28,9 +35,9 @@ export default function Conversation({ currentUserId, projectId, hasLinkedClient
   const [isPending, startTransition] = useTransition();
   const messages = conversation?.messages ?? [];
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, fileIds: string[]) => {
     startTransition(async () => {
-      const result = await sendMessage(projectId, content);
+      const result = await sendMessage({ projectId, content, fileIds });
       if (!result.success) {
         toast.error(result.error);
       }
@@ -43,25 +50,26 @@ export default function Conversation({ currentUserId, projectId, hasLinkedClient
         <h2 className="text-lg font-semibold tracking-tight">Conversation</h2>
       </div>
 
-      <div className="h-[500px] overflow-y-auto p-6 flex flex-col">
+      <div className="flex h-[500px] flex-col overflow-y-auto p-6">
         {!hasLinkedClient && messages.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <div className="flex flex-1 flex-col items-center justify-center text-center">
             <h3 className="mt-4 text-lg font-semibold">No Client Linked</h3>
-            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
               Attach a client to this project to enable chat and messaging.
             </p>
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex flex-1 flex-col justify-center">
             <EmptyConversation />
           </div>
         ) : (
-          <MessageList currentUserId={currentUserId} messages={messages} />
+          <MessageList currentUserId={currentUserId} messages={messages as any} />
         )}
       </div>
 
       <div className="border-t p-6">
         <MessageInput
+          projectId={projectId}
           onSend={handleSendMessage}
           disabled={!hasLinkedClient || isPending}
         />

@@ -27,3 +27,54 @@ npx prisma db seed
 import { PrismaClient, $Enums } from "@/lib/generated/prisma/client";
 
 theme: $Enums.Theme.SYSTEM
+
+
+Option A — Public Bucket (Recommended for MVP)
+chat-files (Public)
+
+image.png
+contract.pdf
+video.mp4
+
+You store the public URL in Prisma.
+
+Pros:
+
+Very simple
+Fast
+No signed URLs
+Perfect for portfolio projects
+
+Cons:
+
+Anyone with the URL can access the file (they can't list the bucket, but the URL itself works).
+Option B — Private Bucket (Production)
+
+Every download requires:
+
+User
+
+↓
+
+Check Project Permission
+
+↓
+
+Generate Signed URL
+
+↓
+
+Download
+
+Pros:
+
+Enterprise-level security
+
+Cons:
+
+More code
+Signed URL expiration
+More server actions
+I recommend Option A for ClientHub AI v1
+
+Since this is your portfolio SaaS, it's much simpler, and you can migrate to private buckets later

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-
+import { MessageType } from "@prisma/client";
 import { Prisma, ProjectStatus } from "@prisma/client";
 import { CreateProjectInput } from "@/lib/validations/project";
 import { projectCardInclude } from "./project.includes";
@@ -111,7 +111,14 @@ export const projectRepository = {
                     avatar: true,
                   },
                 },
+
+                files: {
+                  orderBy: {
+                    createdAt: "asc",
+                  },
+                },
               },
+
               orderBy: {
                 createdAt: "asc",
               },
@@ -136,8 +143,8 @@ export const projectRepository = {
         ...(filters?.status && {
           status: filters.status,
         }),
-        ...(filters?.includeArchived 
-          ? {} 
+        ...(filters?.includeArchived
+          ? {}
           : filters?.isArchived !== undefined
             ? { isArchived: filters.isArchived }
             : { isArchived: false }),
@@ -151,7 +158,10 @@ export const projectRepository = {
     });
   },
 
-  async findProjectsForClient(clientId: string, filters?: { includeArchived?: boolean }) {
+  async findProjectsForClient(
+    clientId: string,
+    filters?: { includeArchived?: boolean },
+  ) {
     return prisma.project.findMany({
       where: {
         linkedClientId: clientId,
@@ -188,6 +198,8 @@ export const projectRepository = {
                 avatar: true,
               },
             },
+
+            files: true,
           },
 
           orderBy: {
@@ -198,45 +210,110 @@ export const projectRepository = {
     });
   },
   async createConversation(projectId: string) {
+    const existing = await prisma.conversation.findUnique({
+      where: { projectId },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
     return prisma.conversation.create({
       data: {
         projectId,
       },
-      include: {
-        messages: {
-          include: {
-            sender: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "asc",
-          },
-        },
-      },
     });
   },
 
-  async sendMessage(conversationId: string, senderId: string, content: string) {
-    return prisma.message.create({
-      data: {
-        conversationId,
-        senderId,
-        content,
-      },
-      include: {
-        sender: {
-          select: {
-            id: true,
-            name: true,
-            avatar: true,
+  async sendMessage(
+    conversationId: string,
+    senderId: string,
+    data: {
+      content?: string;
+      fileIds?: string[];
+    },
+  ) {
+    return prisma.$transaction(async (tx) => {
+      let type: MessageType = MessageType.TEXT;
+
+      if (data.fileIds?.length) {
+        const uploadedFiles = await tx.file.findMany({
+          where: {
+            id: {
+              in: data.fileIds,
+            },
+          },
+        });
+
+        const hasImage = uploadedFiles.some((file) =>
+          file.mimeType.startsWith("image/"),
+        );
+
+        type = hasImage ? "IMAGE" : "FILE";
+      }
+
+      return tx.message.create({
+        data: {
+          conversationId,
+          senderId,
+          type,
+          content: data.content?.trim() || null,
+          files: data.fileIds?.length
+            ? {
+                connect: data.fileIds.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
+          },
+          files: {
+            orderBy: {
+              createdAt: "asc",
+            },
           },
         },
-      },
+      });
+    });
+  },
+  async sendMessageWithFiles(
+    conversationId: string,
+    senderId: string,
+    data: {
+      content?: string;
+      type: "TEXT" | "FILE" | "IMAGE";
+      fileIds?: string[];
+    },
+  ) {
+    return prisma.$transaction(async (tx) => {
+      return tx.message.create({
+        data: {
+          conversationId,
+          senderId,
+          type: data.type,
+          content: data.content ?? null,
+          files: data.fileIds?.length
+            ? {
+                connect: data.fileIds.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+        include: {
+          sender: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
+          },
+          files: true,
+        },
+      });
     });
   },
 
@@ -251,6 +328,16 @@ export const projectRepository = {
       },
       data: {
         isRead: true,
+      },
+    });
+  },
+  async linkClient(projectId: string, clientId: string) {
+    return prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        linkedClientId: clientId,
       },
     });
   },
