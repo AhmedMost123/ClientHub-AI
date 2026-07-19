@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { projectInvitationRepository } from "@/lib/repositories/project-invitation.repository";
-import { notificationRepository } from "@/lib/repositories/notification.repository";
-import { ProjectInvitationCard } from "@/components/notifications/ProjectInvitationCard";
-import { NotificationCard } from "@/components/notifications/NotificationCard";
+import { NotificationsList } from "@/components/notifications/NotificationsList";
 import { Bell } from "lucide-react";
 
 export default async function NotificationsPage() {
@@ -13,10 +11,7 @@ export default async function NotificationsPage() {
     return null;
   }
 
-  const [invitations, notifications] = await Promise.all([
-    projectInvitationRepository.findPendingInvitationsForClient(session.user.id),
-    notificationRepository.findForUser(session.user.id),
-  ]);
+  const invitations = await projectInvitationRepository.findPendingInvitationsForClient(session.user.id);
 
   return (
     <PageContainer className="max-w-4xl space-y-8">
@@ -31,30 +26,10 @@ export default async function NotificationsPage() {
       </div>
 
       <div className="space-y-6">
-        {invitations.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Pending Invitations</h2>
-            <div className="grid gap-4">
-              {invitations.map((invitation) => (
-                <ProjectInvitationCard key={invitation.id} invitation={invitation} />
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">Recent Activity</h2>
-          {notifications.length === 0 ? (
-            <div className="rounded-2xl border border-white/5 bg-card/50 p-8 text-center text-muted-foreground">
-              No recent notifications
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {notifications.map((notification) => (
-                <NotificationCard key={notification.id} notification={notification} />
-              ))}
-            </div>
-          )}
+          <NotificationsList />
         </div>
       </div>
     </PageContainer>

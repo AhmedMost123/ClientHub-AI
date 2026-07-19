@@ -3,6 +3,7 @@
 
 import { auth } from "@/auth";
 import { projectRepository } from "@/lib/repositories/project.repository";
+import { notificationService } from "@/lib/services/notification.service";
 import { ProjectStatus } from "@prisma/client";
 import { success, failure } from "./action-result";
 import { revalidatePath } from "next/cache";
@@ -32,6 +33,13 @@ export async function updateProjectStatus(
     }
 
     await projectRepository.updateStatus(projectId, status);
+
+    if (project.ownerId) {
+      await notificationService.projectStatusUpdated(project.ownerId, status, project.title, projectId);
+    }
+    if (project.linkedClientId) {
+      await notificationService.projectStatusUpdated(project.linkedClientId, status, project.title, projectId);
+    }
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${projectId}`);

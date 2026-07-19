@@ -41,7 +41,9 @@ export async function acceptProjectInvitation(invitationId: string) {
 
   await notificationService.projectInvitationAccepted(
     invitation.freelancerId,
+    session.user.name ?? "The client",
     invitation.project.title,
+    invitation.projectId,
   );
 
   return success(true);

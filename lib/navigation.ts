@@ -16,6 +16,7 @@ import {
   User,
   Users,
   Wand2,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,8 +37,7 @@ export const freelancerMainNavigation: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/projects", icon: FolderKanban, badge: 8 },
   { name: "Tasks", href: "/tasks", icon: CheckSquare, badge: 12 },
-  { name: "Clients", href: "/clients", icon: Users },
-  { name: "Messages", href: "/messages", icon: MessageSquare, badge: 3 },
+  { name: "Notifications", href: "/notifications", icon: Bell },
 ];
 
 export const freelancerBottomNavigation: NavItem[] = [
@@ -49,7 +49,7 @@ export const freelancerBottomNavigation: NavItem[] = [
 export const clientMainNavigation: NavItem[] = [
   { name: "Dashboard", href: "/client", icon: LayoutDashboard },
   { name: "Projects", href: "/client/projects", icon: FolderKanban },
-  { name: "Messages", href: "/client/messages", icon: MessageSquare },
+  { name: "Notifications", href: "/notifications", icon: Bell },
 ];
 
 export const clientBottomNavigation: NavItem[] = [

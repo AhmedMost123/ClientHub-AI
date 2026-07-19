@@ -6,6 +6,7 @@ import { projectRepository } from "@/lib/repositories/project.repository";
 import { success, failure } from "./action-result";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { notificationService } from "@/lib/services/notification.service";
 
 interface SendMessagePayload {
   projectId: string;
@@ -86,6 +87,14 @@ export async function sendMessage({
       },
     });
 
+    const receiverId = session.user.role === "FREELANCER" ? project.linkedClientId : project.ownerId;
+    if (receiverId) {
+      if (hasFiles && !hasContent) {
+        await notificationService.fileShared(receiverId, session.user.name ?? "User", projectId);
+      } else {
+        await notificationService.messageSent(receiverId, session.user.name ?? "User", projectId);
+      }
+    }
     revalidatePath("/projects");
     revalidatePath(`/projects/${projectId}`);
     return success(message, "Message sent");

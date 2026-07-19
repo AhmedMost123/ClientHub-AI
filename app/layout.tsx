@@ -4,6 +4,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "@/styles/globals.css";
 import AuthProvider from "@/components/providers/auth-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { SocketProvider } from "@/components/providers/socket-provider";
+import { NotificationProvider } from "@/components/providers/notification-provider";
+
 const geistSans = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -38,7 +42,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <SocketProvider>
+              <NotificationProvider>
+                {children}
+              </NotificationProvider>
+            </SocketProvider>
+          </AuthProvider>
+          <Toaster position="top-right" theme="dark" className="toaster-glass" />
         </ThemeProvider>
       </body>
     </html>

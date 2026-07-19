@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useNotifications } from "@/components/providers/notification-provider";
 
 import {
   clientBottomNavigation,
@@ -37,6 +38,7 @@ export function SidebarContent({
 }: SidebarContentProps) {
   const pathname = usePathname();
   const { toggleCollapsed } = useSidebar();
+  const { unreadCount } = useNotifications();
 
   // REMOVED: useSession() is gone. No more "loading" state flickering!
   if (!session) {
@@ -112,6 +114,7 @@ export function SidebarContent({
               isActive={isActiveRoute(pathname, item.href)}
               collapsed={collapsed}
               onNavigate={onNavigate}
+              badge={item.name === "Notifications" && unreadCount > 0 ? unreadCount : item.badge}
             />
           ))}
         </nav>

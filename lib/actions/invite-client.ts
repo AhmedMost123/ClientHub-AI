@@ -32,7 +32,7 @@ export async function inviteClient(projectId: string, clientId: string) {
     return failure("An invitation has already been sent.");
   }
 
-  await projectInvitationRepository.create({
+  const invitation = await projectInvitationRepository.create({
     projectId,
     freelancerId: session.user.id,
     clientId,
@@ -43,6 +43,7 @@ export async function inviteClient(projectId: string, clientId: string) {
     session.user.name ?? "Freelancer",
     project.title,
     clientId,
+    invitation.id,
   );
 
   return success(true);

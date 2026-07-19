@@ -40,12 +40,18 @@ export const projectInvitationRepository = {
     });
   },
 
-  async findPendingInvitation(projectId: string, clientId: string) {
+  async findPendingInvitation(projectId: string, userId: string) {
     return prisma.projectInvitation.findFirst({
       where: {
         projectId,
-        clientId,
+        OR: [
+          { clientId: userId },
+          { freelancerId: userId }
+        ],
         status: ProjectInvitationStatus.PENDING,
+      },
+      include: {
+        project: true,
       },
     });
   },

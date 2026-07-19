@@ -36,6 +36,7 @@ export async function declineProjectInvitation(invitationId: string) {
 
   await notificationService.projectInvitationDeclined(
     invitation.freelancerId,
+    session.user.name ?? "The client",
     invitation.project.title,
   );
 

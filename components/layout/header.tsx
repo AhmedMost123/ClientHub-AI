@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { cn, getInitials } from "@/lib/utils";
+import { NotificationBell } from "./NotificationBell";
 
 export default function Header() {
   const { collapsed, mobileOpen, setMobileOpen, toggleCollapsed } =
@@ -55,15 +56,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Notifications"
-            className="relative text-muted-foreground hover:bg-sidebar-accent transition-all duration-200"
-          >
-            <Bell className="size-5 transition-transform duration-200 hover:scale-110" />
-            <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive ring-2 ring-background animate-pulse-subtle" />
-          </Button>
+          <NotificationBell />
 
           <Avatar className="size-8 cursor-pointer ring-2 ring-border/50 transition-all duration-200 hover:ring-sidebar-accent hover:scale-105">
             <AvatarFallback
