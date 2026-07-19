@@ -8,6 +8,257 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id                         String              @id @default(cuid())
+  name                       String
+  email                      String              @unique
+  password                   String
+  lastLogin                  DateTime?
+  avatar                     String?
+  createdAt                  DateTime            @default(now())
+  updatedAt                  DateTime            @updatedAt
+  role                       UserRole            @default(FREELANCER)
+  isDisabled                 Boolean             @default(false)
+  aiChats                    AIChat[]
+  activityLogs               ActivityLog[]
+  clientProfile              Client?
+  uploadedFiles              File[]
+  messages                   Message[]
+  notifications              Notification[]
+  sharedProjects             Project[]           @relation("SharedProjects")
+  freelancerProjects         Project[]           @relation("FreelancerProjects")
+  receivedProjectInvitations ProjectInvitation[] @relation("ReceivedProjectInvitations")
+  sentProjectInvitations     ProjectInvitation[] @relation("SentProjectInvitations")
+  createdTasks               Task[]              @relation("TaskCreator")
+  settings                   UserSettings?
+}
+
+model Client {
+  id        String       @id @default(cuid())
+  phone     String?
+  company   String?
+  notes     String?
+  status    ClientStatus @default(LEAD)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Project {
+  id             String              @id @default(cuid())
+  title          String
+  description    String?
+  budget         Float?
+  status         ProjectStatus       @default(PLANNING)
+  dueDate        DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  customerName   String
+  linkedClientId String?
+  ownerId        String
+  archivedAt     DateTime?
+  /// NEW
+  isArchived     Boolean             @default(false)
+  activities     ActivityLog[]
+  conversation   Conversation?
+  files          File[]
+  invoices       Invoice[]
+  notifications  Notification[]
+  linkedClient   User?               @relation("SharedProjects", fields: [linkedClientId], references: [id])
+  owner          User                @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+  invitations    ProjectInvitation[]
+  tasks          Task[]
+
+  @@index([ownerId])
+  @@index([linkedClientId])
+  @@index([status])
+  @@index([isArchived])
+}
+
+model Task {
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  estimatedHours Int?
+  status         TaskStatus @default(TODO)
+  priority       Priority   @default(MEDIUM)
+  dueDate        DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  deletedAt      DateTime?
+  projectId      String
+  createdById    String?
+  order          Int        @default(0)
+  createdBy      User?      @relation("TaskCreator", fields: [createdById], references: [id])
+  project        Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdById])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projectId String    @unique
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages  Message[]
+
+  @@index([projectId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  type           MessageType  @default(TEXT)
+  content        String?
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversationId String
+  senderId       String
+  files          File[]
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model File {
+  id           String    @id @default(cuid())
+  fileUrl      String
+  fileSize     Int
+  mimeType     String
+  projectId    String
+  createdAt    DateTime  @default(now())
+  messageId    String?
+  /// Random filename stored in Supabase
+  name         String
+  updatedAt    DateTime  @updatedAt
+  uploadedById String
+  /// Original filename shown in the UI
+  originalName String
+  deletedAt    DateTime?
+  isDeleted    Boolean   @default(false)
+  storagePath  String
+  message      Message?  @relation(fields: [messageId], references: [id])
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy   User      @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([uploadedById])
+  @@index([messageId])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  paidAt        DateTime?
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  status        InvoiceStatus @default(DRAFT)
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime?
+  createdAt     DateTime      @default(now())
+  deletedAt     DateTime?
+  projectId     String
+  description   String?
+  notes         String?
+  updatedAt     DateTime      @updatedAt
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ActivityLog {
+  id        String       @id @default(cuid())
+  action    ActivityType
+  createdAt DateTime     @default(now())
+  projectId String
+  userId    String
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model AIChat {
+  id        String      @id @default(cuid())
+  title     String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id        String       @id @default(cuid())
+  content   String
+  createdAt DateTime     @default(now())
+  chatId    String
+  role      AISenderRole
+  chat      AIChat       @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  title     String
+  message   String
+  link      String?
+  type      NotificationType
+  isRead    Boolean           @default(false)
+  createdAt DateTime          @default(now())
+  userId    String
+  event     NotificationEvent
+  projectId String?
+  handledAt DateTime?
+  isHandled Boolean           @default(false)
+  project   Project?          @relation(fields: [projectId], references: [id])
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([projectId])
+}
+
+model UserSettings {
+  id          String   @id @default(cuid())
+  theme       Theme    @default(SYSTEM)
+  language    String   @default("en")
+  emailAlerts Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProjectInvitation {
+  id           String                  @id @default(cuid())
+  projectId    String
+  freelancerId String
+  clientId     String
+  status       ProjectInvitationStatus @default(PENDING)
+  createdAt    DateTime                @default(now())
+  respondedAt  DateTime?
+  client       User                    @relation("ReceivedProjectInvitations", fields: [clientId], references: [id], onDelete: Cascade)
+  freelancer   User                    @relation("SentProjectInvitations", fields: [freelancerId], references: [id], onDelete: Cascade)
+  project      Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([freelancerId])
+  @@index([clientId])
+}
+
 enum UserRole {
   FREELANCER
   CLIENT
@@ -86,319 +337,21 @@ enum NotificationEvent {
   TASK_ASSIGNED
   INVOICE_PAID
   PROJECT_COMPLETED
-
   PROJECT_INVITATION
   PROJECT_INVITATION_ACCEPTED
   PROJECT_INVITATION_DECLINED
 }
+
 enum ActivityType {
   MESSAGE_SENT
   FILE_UPLOADED
   TASK_CREATED
-  TASK_EDITED
   TASK_COMPLETED
-  TASK_DELETED
   PROJECT_CREATED
-  PROJECT_UPDATED
   PROJECT_COMPLETED
   INVOICE_SENT
   INVOICE_PAID
-}
-
-model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  role      UserRole  @default(FREELANCER)
-  lastLogin DateTime?
-  avatar    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Profile Extension for Clients
-  clientProfile Client?
-
-  // Relations
-  freelancerProjects Project[]      @relation("FreelancerProjects")
-  sharedProjects     Project[]      @relation("SharedProjects")
-  createdTasks       Task[]         @relation("TaskCreator")
-  messages           Message[]
-  uploadedFiles      File[]
-  aiChats            AIChat[]
-  notifications      Notification[]
-  activityLogs       ActivityLog[]
-  settings           UserSettings?
-
-  sentProjectInvitations ProjectInvitation[] @relation("SentProjectInvitations")
-
-receivedProjectInvitations ProjectInvitation[] @relation("ReceivedProjectInvitations")
-}
-
-model Client {
-  id      String       @id @default(cuid())
-  company String?
-  phone   String?
-  notes   String? // Internal relationship tracking notes
-  status  ClientStatus @default(LEAD)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Soft Delete
-
-  // Binds account auth (User) directly with relationship details (Client Profile)
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model Project {
-  id           String        @id @default(cuid())
-  title        String
-  description  String?
-  customerName String
-  budget       Float?
-  status       ProjectStatus @default(PLANNING)
-  dueDate      DateTime?
-
-  /// NEW
-  isArchived   Boolean       @default(false)
-  archivedAt   DateTime?
-
-  ownerId String
-  owner   User @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
-
-  linkedClientId String?
-  linkedClient   User? @relation("SharedProjects", fields: [linkedClientId], references: [id])
-
-  tasks         Task[]
-  files         File[]
-  invoices      Invoice[]
-  conversation  Conversation?
-  activities    ActivityLog[]
-  notifications Notification[]
-  invitations   ProjectInvitation[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([ownerId])
-  @@index([linkedClientId])
-  @@index([status])
-  @@index([isArchived])
-}
-
-model Task {
-  id             String     @id @default(cuid())
-  title          String
-  description    String?
-  estimatedHours Int?
-  status         TaskStatus @default(TODO)
-  priority       Priority   @default(MEDIUM)
-  order          Int        @default(0) // Drag-and-drop indexing
-
-  dueDate     DateTime?
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? // Soft Delete
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  createdById String?
-  createdBy   User?   @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
-
-  @@index([projectId])
-  @@index([createdById])
-}
-
-model Conversation {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  projectId String  @unique
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  messages Message[]
-
-  @@index([projectId])
-}
-
-model Message {
-  id        String      @id @default(cuid())
-  type      MessageType @default(TEXT)
-  content   String?
-  isRead    Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  senderId String
-  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
-
-  files File[]
-
-  @@index([conversationId])
-  @@index([senderId])
-}
-
-model File {
-  id           String   @id @default(cuid())
-
-  /// Random filename stored in Supabase
-  name          String
-
-  /// Original filename shown in the UI
-  originalName  String
-
-  fileUrl       String
-
-  fileSize      Int
-
-  mimeType      String
-
-  storagePath   String
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  uploadedById  String
-  uploadedBy    User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
-
-  projectId     String
-  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  messageId      String?
-  message        Message? @relation(fields: [messageId], references: [id], onDelete: SetNull)
-
-  isDeleted      Boolean @default(false)
-  deletedAt      DateTime?
- 
-  @@index([projectId])
-  @@index([uploadedById])
-  @@index([messageId])
-}
-
-model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique
-  paidAt        DateTime?
-  amount        Decimal       @db.Decimal(10, 2)
-  currency      String        @default("USD")
-  status        InvoiceStatus @default(DRAFT)
-  description   String?
-  notes         String?
-
-  issueDate DateTime  @default(now())
-  dueDate   DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Soft Delete
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-}
-
-model ActivityLog {
-  id        String       @id @default(cuid())
-  action    ActivityType
-  createdAt DateTime     @default(now())
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-  @@index([userId])
-}
-
-model AIChat {
-  id        String   @id @default(cuid())
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId   String
-  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages AIMessage[]
-
-  @@index([userId])
-}
-
-model AIMessage {
-  id        String       @id @default(cuid())
-  role      AISenderRole
-  content   String
-  createdAt DateTime     @default(now())
-
-  chatId String
-  chat   AIChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
-
-  @@index([chatId])
-}
-
-model Notification {
-  id        String            @id @default(cuid())
-
-  title     String
-  message   String
-  link      String?
-
-  type      NotificationType
-  event     NotificationEvent
-
-  isRead    Boolean           @default(false)
-
-  // NEW
-  isHandled Boolean           @default(false)
-  handledAt DateTime?
-
-  createdAt DateTime          @default(now())
-
-  userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  projectId String?
-  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([projectId])
-}
-model UserSettings {
-  id          String   @id @default(cuid())
-  theme       Theme    @default(SYSTEM)
-  language    String   @default("en")
-  emailAlerts Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model ProjectInvitation {
-  id           String                  @id @default(cuid())
-  projectId    String
-  project      Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  freelancerId String
-  freelancer   User                    @relation("SentProjectInvitations", fields: [freelancerId], references: [id], onDelete: Cascade)
-  clientId     String
-  client       User                    @relation("ReceivedProjectInvitations", fields: [clientId], references: [id], onDelete: Cascade)
-  status       ProjectInvitationStatus @default(PENDING)
-  createdAt    DateTime                @default(now())
-  respondedAt  DateTime?
-
-  @@index([projectId])
-  @@index([freelancerId])
-  @@index([clientId])
+  TASK_EDITED
+  TASK_DELETED
+  PROJECT_UPDATED
 }

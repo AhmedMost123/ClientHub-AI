@@ -100,25 +100,6 @@ export function SidebarContent({
           )}
         </div>
 
-        {/* New Project */}
-        <div className={cn("px-4 pt-5", collapsed && "px-2")}>
-          <Link
-            href="/dashboard/projects/new"
-            onClick={onNavigate}
-            className={cn(
-              "group flex h-10 w-full items-center justify-center gap-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-              collapsed && "size-10 px-0 hover:-translate-y-0 hover:scale-105",
-            )}
-            style={{ background: "var(--gradient-brand)" }}
-            aria-label="New Project"
-          >
-            <div className="flex size-5 shrink-0 items-center justify-center rounded-[6px] bg-white/25 shadow-sm transition-transform duration-300 group-hover:scale-110">
-              <Plus className="size-3.5 text-white" strokeWidth={2.5} />
-            </div>
-            {!collapsed && <span>New Project</span>}
-          </Link>
-        </div>
-
         {/* Navigation */}
         <nav
           className="scrollbar-thin flex-1 space-y-1 overflow-y-auto px-3 py-4"

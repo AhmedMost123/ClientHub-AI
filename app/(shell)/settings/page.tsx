@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signOut } from "next-auth/react";
-import { User, Mail, Palette, LogOut, Loader2 } from "lucide-react";
+import { User, Mail, Palette, LogOut, Loader2, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,10 +10,12 @@ import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import { cn, getInitials } from "@/lib/utils";
+import { DeleteAccountDialog } from "@/components/settings/DeleteAccountDialog";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const userName = session?.user?.name ?? "User";
   const userEmail = session?.user?.email ?? "";
@@ -98,44 +100,77 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Logout Section */}
+      {/* Account Management Section */}
       <div className="card-premium rounded-2xl p-6">
-        <h2 className="mb-4 text-lg font-semibold">Danger Zone</h2>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className="flex size-10 items-center justify-center rounded-xl bg-destructive/10"
+        <h2 className="mb-4 text-lg font-semibold">Account Management</h2>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="flex size-10 items-center justify-center rounded-xl bg-destructive/10"
+              >
+                <LogOut className="size-5 text-destructive" />
+              </div>
+              <div>
+                <p className="font-medium">Log Out</p>
+                <p className="text-sm text-muted-foreground">
+                  Sign out of your account
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+              className="rounded-xl"
             >
-              <LogOut className="size-5 text-destructive" />
-            </div>
-            <div>
-              <p className="font-medium">Log Out</p>
-              <p className="text-sm text-muted-foreground">
-                Sign out of your account
-              </p>
-            </div>
+              {isSigningOut ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Signing out...
+                </>
+              ) : (
+                <>
+                  <LogOut className="mr-2 size-4" />
+                  Log Out
+                </>
+              )}
+            </Button>
           </div>
-          <Button
-            variant="destructive"
-            onClick={handleSignOut}
-            disabled={isSigningOut}
-            className="rounded-xl"
-          >
-            {isSigningOut ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Signing out...
-              </>
-            ) : (
-              <>
-                <LogOut className="mr-2 size-4" />
-                Log Out
-              </>
-            )}
-          </Button>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div
+                className="flex size-10 items-center justify-center rounded-xl bg-destructive/10"
+              >
+                <Trash2 className="size-5 text-destructive" />
+              </div>
+              <div>
+                <p className="font-medium">Delete Account</p>
+                <p className="text-sm text-muted-foreground">
+                  Permanently disable your account
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="rounded-xl"
+            >
+              <Trash2 className="mr-2 size-4" />
+              Delete Account
+            </Button>
+          </div>
         </div>
       </div>
+
+      <DeleteAccountDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      />
     </div>
   );
 }

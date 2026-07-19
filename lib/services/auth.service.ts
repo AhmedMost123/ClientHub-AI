@@ -43,6 +43,12 @@ export async function authenticateUser(email: string, password: string) {
     return null;
   }
 
+  if (user.isDisabled) {
+    throw new Error(
+      "This account has been disabled. Please contact support if you believe this is a mistake."
+    );
+  }
+
   const validPassword = await comparePassword(password, user.password);
 
   if (!validPassword) {
