@@ -3,7 +3,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { success, failure } from "./action-result";
-import { signOut } from "@/auth";
 
 export async function deleteAccount() {
   try {
@@ -22,9 +21,6 @@ export async function deleteAccount() {
         isDisabled: true,
       },
     });
-
-    // Sign out the user
-    await signOut({ redirectTo: "/login" });
 
     return success({ message: "Account deleted successfully" });
   } catch (error) {

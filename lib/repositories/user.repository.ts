@@ -17,7 +17,13 @@ export const userRepository = {
     role: UserRole;
   }) {
     return prisma.user.create({
-      data,
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        isDisabled: false,
+      },
     });
   },
 

@@ -18,6 +18,8 @@ export const RegisterSchema = z
 
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 
+export type UserCreateInput = Omit<RegisterInput, "confirmPassword">;
+
 // Login Schema
 export const LoginSchema = z.object({
   email: z.string().email(),

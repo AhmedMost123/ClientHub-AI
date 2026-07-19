@@ -15,7 +15,9 @@ export async function POST(req: Request) {
       });
     }
 
-    await registerUser(parsed.data);
+    const { confirmPassword, ...userData } = parsed.data;
+
+    await registerUser(userData);
 
     return NextResponse.json(
       {

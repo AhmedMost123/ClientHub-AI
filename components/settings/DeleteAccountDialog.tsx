@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { deleteAccount } from "@/lib/actions/delete-account";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 interface DeleteAccountDialogProps {
   open: boolean;
@@ -40,7 +41,10 @@ export function DeleteAccountDialog({
 
     if (result.success) {
       onOpenChange(false);
-      router.push("/login");
+      await signOut({
+        redirect: true,
+        callbackUrl: "/",
+      });
     } else {
       alert(result.error);
     }

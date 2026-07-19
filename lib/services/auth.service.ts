@@ -2,6 +2,7 @@ import { hashPassword } from "../utils/passwords";
 import { comparePassword } from "../utils/passwords";
 import { createUser, findUserByEmail } from "../repositories/user.repository";
 
+
 type UserRole = "FREELANCER" | "CLIENT" | "ADMIN";
 
 export async function registerUser(data: {
