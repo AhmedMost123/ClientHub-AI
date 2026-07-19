@@ -14,7 +14,7 @@ export function PageTitle({
   className,
 }: PageTitleProps) {
   return (
-    <div className={cn("space-y-2 animate-in-slide-up", className)}>
+    <div className={cn("space-y-1.5 animate-in-slide-up", className)}>
       {eyebrow && (
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {eyebrow}

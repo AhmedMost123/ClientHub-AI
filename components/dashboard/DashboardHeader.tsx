@@ -25,11 +25,11 @@ export function DashboardHeader({ className }: DashboardHeaderProps) {
   return (
     <section
       className={cn(
-        "flex flex-col justify-between gap-6 lg:flex-row lg:items-center",
+        "flex flex-col justify-between gap-4 lg:flex-row lg:items-center",
         className
       )}
     >
-      <div className="space-y-3 animate-in-slide-up">
+      <div className="space-y-2 animate-in-slide-up">
         <p className="text-sm font-medium text-muted-foreground">{today}</p>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl text-balance">
           {getGreeting()},{" "}

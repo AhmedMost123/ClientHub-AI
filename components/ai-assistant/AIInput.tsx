@@ -1,4 +1,6 @@
-import { Paperclip, ArrowUp } from "lucide-react";
+"use client";
+
+import { Paperclip, ArrowUp, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { KeyboardEvent, useRef, useEffect } from "react";
@@ -7,9 +9,11 @@ interface AIInputProps {
   input: string;
   setInput: (value: string) => void;
   onSend: () => void;
+  isLoading?: boolean;
+  onStop?: () => void;
 }
 
-export function AIInput({ input, setInput, onSend }: AIInputProps) {
+export function AIInput({ input, setInput, onSend, isLoading = false, onStop }: AIInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -22,7 +26,7 @@ export function AIInput({ input, setInput, onSend }: AIInputProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (input.trim()) {
+      if (input.trim() && !isLoading) {
         onSend();
       }
     }
@@ -31,7 +35,9 @@ export function AIInput({ input, setInput, onSend }: AIInputProps) {
   return (
     <div className="flex flex-col gap-2 w-full max-w-3xl mx-auto">
       <p className="text-xs text-center text-muted-foreground/70 mb-1">
-        ClientHub AI specializes in freelancing and client communication.
+        ClientHub AI specializes in freelancing and client communication.{" "}
+        <kbd className="hidden sm:inline text-[10px] bg-muted px-1 py-0.5 rounded">Shift+Enter</kbd>
+        <span className="hidden sm:inline"> for new line</span>
       </p>
       <div className="relative flex items-end w-full bg-surface border border-border/60 rounded-[1.5rem] p-2 shadow-sm focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all">
         <Button
@@ -49,18 +55,31 @@ export function AIInput({ input, setInput, onSend }: AIInputProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask anything..."
-          className="min-h-[44px] max-h-[200px] w-full resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 text-[15px] leading-relaxed [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          placeholder={isLoading ? "Generating..." : "Ask anything about freelancing..."}
+          disabled={isLoading}
+          className="min-h-[44px] max-h-[200px] w-full resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 text-[15px] leading-relaxed [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] disabled:opacity-60 disabled:cursor-not-allowed"
           rows={1}
         />
-        <Button
-          onClick={onSend}
-          disabled={!input.trim()}
-          size="icon"
-          className="shrink-0 rounded-full w-10 h-10 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 mb-0.5 shadow-sm transition-transform active:scale-95"
-        >
-          <ArrowUp className="w-5 h-5" />
-        </Button>
+        {isLoading && onStop ? (
+          <Button
+            onClick={onStop}
+            size="icon"
+            variant="outline"
+            className="shrink-0 rounded-full w-10 h-10 mb-0.5 border-destructive/30 text-destructive hover:bg-destructive/10"
+            title="Stop generating"
+          >
+            <Square className="w-4 h-4 fill-current" />
+          </Button>
+        ) : (
+          <Button
+            onClick={onSend}
+            disabled={!input.trim() || isLoading}
+            size="icon"
+            className="shrink-0 rounded-full w-10 h-10 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 mb-0.5 shadow-sm transition-transform active:scale-95"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </Button>
+        )}
       </div>
     </div>
   );

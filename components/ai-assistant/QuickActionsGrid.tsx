@@ -1,11 +1,11 @@
-import { 
-  FileText, 
-  MessageSquareReply, 
-  Calculator, 
-  FileSignature, 
-  Languages, 
-  PenTool, 
-  ListChecks 
+import {
+  FileText,
+  MessageSquareReply,
+  Calculator,
+  FileSignature,
+  Languages,
+  PenTool,
+  ListChecks
 } from "lucide-react";
 import { QuickActionCard } from "./QuickActionCard";
 
@@ -63,9 +63,10 @@ const actions: QuickAction[] = [
 
 interface QuickActionsGridProps {
   onActionSelect: (action: QuickAction) => void;
+  disabled?: boolean;
 }
 
-export function QuickActionsGrid({ onActionSelect }: QuickActionsGridProps) {
+export function QuickActionsGrid({ onActionSelect, disabled = false }: QuickActionsGridProps) {
   return (
     <div className="w-full relative">
       {/* Mobile: Horizontal scroll. Desktop: Grid */}
@@ -76,6 +77,7 @@ export function QuickActionsGrid({ onActionSelect }: QuickActionsGridProps) {
               icon={action.icon}
               title={action.title}
               onClick={() => onActionSelect(action)}
+              disabled={disabled}
             />
           </div>
         ))}

@@ -28,7 +28,7 @@ function DashboardShell({
           { "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties
         }
       >
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-7 lg:py-6">{children}</main>
       </div>
     </div>
   );
