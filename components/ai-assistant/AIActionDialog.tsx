@@ -10,14 +10,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-interface ProposalDialogProps {
+export interface AIActionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Called with the full proposal text to inject into the chat as a message */
-  onProposalGenerated: (proposalText: string) => void;
+  /** Called with the full action text to inject into the chat as a message */
+  onActionGenerated: (actionText: string) => void;
+  title: string;
+  description: string;
+  actionType: "proposal" | "project_description";
+  submitLabel: string;
 }
 
-export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: ProposalDialogProps) {
+export function AIActionDialog({ 
+  open, 
+  onOpenChange, 
+  onActionGenerated,
+  title: dialogTitle,
+  description: dialogDescription,
+  actionType,
+  submitLabel
+}: AIActionDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
@@ -32,12 +44,12 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
       const res = await fetch("/api/ai/proposal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, budget, tone }),
+        body: JSON.stringify({ title, description, budget, tone, actionType }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to generate proposal");
+        throw new Error(data.error || "Failed to generate action");
       }
 
       // Stream the response
@@ -68,7 +80,7 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
             const event = JSON.parse(raw);
             if (event.type === "token") {
               fullText += event.content;
-              onProposalGenerated(fullText);
+              onActionGenerated(fullText);
             } else if (event.type === "error") {
               throw new Error(event.message);
             }
@@ -78,7 +90,7 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
         }
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to generate proposal";
+      const msg = err instanceof Error ? err.message : "Failed to generate action";
       toast.error(msg);
     } finally {
       setIsGenerating(false);
@@ -96,16 +108,16 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
     <Dialog open={open} onOpenChange={(v) => { if (!isGenerating) onOpenChange(v); }}>
       <DialogContent className="sm:max-w-[425px] rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Write Proposal</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            Provide project details and ClientHub AI will generate a tailored, professional proposal.
+            {dialogDescription}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="proposal-title">Project Title <span className="text-destructive">*</span></Label>
+            <Label htmlFor="action-title">Project Title <span className="text-destructive">*</span></Label>
             <Input
-              id="proposal-title"
+              id="action-title"
               placeholder="e.g., E-commerce Website Redesign"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -113,10 +125,10 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="proposal-description">Short Description</Label>
+            <Label htmlFor="action-description">Short Description</Label>
             <Textarea
-              id="proposal-description"
-              placeholder="Briefly describe what the client needs..."
+              id="action-description"
+              placeholder="Briefly describe what is needed..."
               className="resize-none"
               rows={3}
               value={description}
@@ -126,9 +138,9 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="proposal-budget">Budget (Optional)</Label>
+              <Label htmlFor="action-budget">Budget (Optional)</Label>
               <Input
-                id="proposal-budget"
+                id="action-budget"
                 placeholder="e.g., $5,000"
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
@@ -136,15 +148,17 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="proposal-tone">Tone</Label>
+              <Label htmlFor="action-tone">Tone</Label>
               <Select value={tone} onValueChange={(val) => setTone(val || "Professional")} disabled={isGenerating}>
-                <SelectTrigger id="proposal-tone">
+                <SelectTrigger id="action-tone">
                   <SelectValue placeholder="Select tone" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Professional">Professional</SelectItem>
                   <SelectItem value="Friendly">Friendly</SelectItem>
                   <SelectItem value="Confident">Confident</SelectItem>
+                  <SelectItem value="Detailed">Detailed</SelectItem>
+                  <SelectItem value="Concise">Concise</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -161,7 +175,7 @@ export function ProposalDialog({ open, onOpenChange, onProposalGenerated }: Prop
                 Generating...
               </>
             ) : (
-              "Generate Proposal"
+              submitLabel
             )}
           </Button>
         </DialogFooter>

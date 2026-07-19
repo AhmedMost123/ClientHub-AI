@@ -1,6 +1,14 @@
 import { Sparkles } from "lucide-react";
 
-export function AIEmptyState() {
+interface AIEmptyStateProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function AIEmptyState({ 
+  title = "How can I help your freelance business?", 
+  subtitle = "Pick a quick action above or type your own question." 
+}: AIEmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center gap-4 px-4 py-8 animate-in fade-in duration-500">
       {/* Icon */}
@@ -14,10 +22,10 @@ export function AIEmptyState() {
       {/* Text */}
       <div className="space-y-1.5 max-w-sm">
         <h2 className="text-lg md:text-xl font-semibold tracking-tight text-foreground">
-          How can I help your freelance business?
+          {title}
         </h2>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          Pick a quick action above or type your own question.
+          {subtitle}
         </p>
       </div>
     </div>

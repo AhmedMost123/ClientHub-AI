@@ -54,6 +54,7 @@ export const clientMainNavigation: NavItem[] = [
 
 export const clientBottomNavigation: NavItem[] = [
   { name: "Support", href: "/client/support", icon: HelpCircle },
+  { name: "AI Assistant", href: "/client/ai-assistant", icon: Sparkles },
 ];
 
 // Legacy navigation (for backward compatibility)

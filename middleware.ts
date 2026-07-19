@@ -16,6 +16,7 @@ export async function middleware(req: NextRequest) {
   const isSettingsPage = req.nextUrl.pathname.startsWith("/settings");
   const isProjectsPage = req.nextUrl.pathname.startsWith("/projects");
   const isMessagesPage = req.nextUrl.pathname.startsWith("/messages");
+  const isFreelancerAiPage = req.nextUrl.pathname === "/ai-assistant";
 
   const isProtectedRoute =
     isDashboardPage ||
@@ -23,7 +24,9 @@ export async function middleware(req: NextRequest) {
     isAdminPage ||
     isSettingsPage ||
     isProjectsPage ||
-    isMessagesPage;
+    isMessagesPage ||
+    isFreelancerAiPage ||
+    req.nextUrl.pathname.startsWith("/client/ai-assistant");
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && isAuthPage) {
@@ -44,6 +47,9 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
     if (isAdminPage && role !== "ADMIN") {
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+    }
+    if (isFreelancerAiPage && role !== "FREELANCER") {
       return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
   }

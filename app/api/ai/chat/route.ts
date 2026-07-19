@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     const { stream, chatId: resolvedChatId } = await aiService.sendMessage(
       session.user.id,
       message,
+      session.user.role === "CLIENT" ? "CLIENT" : "FREELANCER",
       chatId,
     );
 

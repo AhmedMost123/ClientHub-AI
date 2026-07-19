@@ -1,9 +1,21 @@
 import { AISenderRole } from "@prisma/client";
 import { groqClient } from "@/lib/ai/groq";
-import { SYSTEM_PROMPT, PROPOSAL_SYSTEM_PROMPT } from "@/lib/ai/systemPrompt";
+import { 
+  SYSTEM_PROMPT, 
+  CLIENT_SYSTEM_PROMPT,
+  PROPOSAL_SYSTEM_PROMPT,
+  CLIENT_PROJECT_DESCRIPTION_SYSTEM_PROMPT
+} from "@/lib/ai/systemPrompt";
 import { AI_CONFIG } from "@/lib/ai/config";
 import { aiRepository } from "@/lib/repositories/ai.repository";
-import { buildTitlePrompt } from "@/lib/ai/prompts";
+import { 
+  buildTitlePrompt, 
+  buildProposalPrompt, 
+  buildProjectDescriptionPrompt,
+  AIActionParams 
+} from "@/lib/ai/prompts";
+
+type Role = "FREELANCER" | "CLIENT";
 
 export const aiService = {
   /**
@@ -13,6 +25,7 @@ export const aiService = {
   async sendMessage(
     userId: string,
     message: string,
+    role: Role,
     chatId?: string,
   ) {
     // 1. Get or create the chat
@@ -42,11 +55,14 @@ export const aiService = {
       content: msg.content,
     }));
 
+    // Select system prompt based on role
+    const systemPrompt = role === "CLIENT" ? CLIENT_SYSTEM_PROMPT : SYSTEM_PROMPT;
+
     // 4. Create streaming request to Groq
     const stream = await groqClient.chat.completions.create({
       model: AI_CONFIG.chatModel,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         ...groqMessages,
       ],
       max_tokens: AI_CONFIG.chatMaxTokens,
@@ -73,14 +89,26 @@ export const aiService = {
   },
 
   /**
-   * Generate a streaming proposal from the Groq API.
+   * Generate a streaming response for structured actions (e.g. proposals, project descriptions).
    */
-  async generateProposal(prompt: string) {
+  async generateAction(role: Role, actionType: string, params: AIActionParams) {
+    let systemPrompt = PROPOSAL_SYSTEM_PROMPT;
+    let userPrompt = "";
+
+    if (role === "CLIENT" && actionType === "project_description") {
+      systemPrompt = CLIENT_PROJECT_DESCRIPTION_SYSTEM_PROMPT;
+      userPrompt = buildProjectDescriptionPrompt(params);
+    } else {
+      // Default to proposal for freelancer or fallback
+      systemPrompt = PROPOSAL_SYSTEM_PROMPT;
+      userPrompt = buildProposalPrompt(params);
+    }
+
     return groqClient.chat.completions.create({
       model: AI_CONFIG.chatModel,
       messages: [
-        { role: "system", content: PROPOSAL_SYSTEM_PROMPT },
-        { role: "user", content: prompt },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
       ],
       max_tokens: AI_CONFIG.proposalMaxTokens,
       temperature: AI_CONFIG.proposalTemperature,

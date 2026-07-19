@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AIHero } from "@/components/ai-assistant/AIHero";
-import { QuickActionsGrid, FREELANCER_QUICK_ACTIONS, QuickAction } from "@/components/ai-assistant/QuickActionsGrid";
+import { QuickActionsGrid, CLIENT_QUICK_ACTIONS, QuickAction } from "@/components/ai-assistant/QuickActionsGrid";
 import { AIChat } from "@/components/ai-assistant/AIChat";
 import { AIActionDialog } from "@/components/ai-assistant/AIActionDialog";
 import { ConversationSidebar, ChatSummary } from "@/components/ai-assistant/ConversationSidebar";
@@ -12,11 +12,11 @@ import { toast } from "sonner";
 // Helper: generate a temporary ID
 const tempId = () => `temp-${Date.now()}-${Math.random()}`;
 
-export default function AIAssistantPage() {
+export default function ClientAIAssistantPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
+  const [isActionDialogOpen, setIsActionDialogOpen] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -220,51 +220,51 @@ export default function AIAssistantPage() {
 
   // ─── Quick action handler ──────────────────────────────────────────────────
   const handleActionSelect = useCallback((action: QuickAction) => {
-    if (action.id === "proposal") {
-      setIsProposalDialogOpen(true);
+    if (action.id === "project_description") {
+      setIsActionDialogOpen(true);
     } else {
       setInput(action.prompt);
     }
   }, []);
 
   // ─── Proposal streaming into chat ─────────────────────────────────────────
-  const [proposalAssistantId] = useState(() => tempId());
-  const proposalInitialized = useRef(false);
+  const [actionAssistantId] = useState(() => tempId());
+  const actionInitialized = useRef(false);
 
-  const handleProposalStream = useCallback((partialText: string) => {
+  const handleActionStream = useCallback((partialText: string) => {
     setMessages((prev) => {
-      const existing = prev.find((m) => m.id === proposalAssistantId);
+      const existing = prev.find((m) => m.id === actionAssistantId);
       if (!existing) {
         // First token — inject the streaming message
         const userMsg: Message = {
           id: tempId(),
           role: "user",
-          content: "Generate a professional proposal",
+          content: "Generate a professional project description",
         };
         return [
           ...prev,
           userMsg,
-          { id: proposalAssistantId, role: "assistant", content: partialText, isStreaming: true },
+          { id: actionAssistantId, role: "assistant", content: partialText, isStreaming: true },
         ];
       }
       return prev.map((m) =>
-        m.id === proposalAssistantId ? { ...m, content: partialText } : m,
+        m.id === actionAssistantId ? { ...m, content: partialText } : m,
       );
     });
-  }, [proposalAssistantId]);
+  }, [actionAssistantId]);
 
   // Finalize proposal when dialog closes after generation
-  const handleProposalDialogChange = useCallback((open: boolean) => {
-    setIsProposalDialogOpen(open);
+  const handleActionDialogChange = useCallback((open: boolean) => {
+    setIsActionDialogOpen(open);
     if (!open) {
       // Mark the streaming message as done
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === proposalAssistantId ? { ...m, isStreaming: false } : m,
+          m.id === actionAssistantId ? { ...m, isStreaming: false } : m,
         ),
       );
     }
-  }, [proposalAssistantId]);
+  }, [actionAssistantId]);
 
   // ─── Sidebar callbacks ─────────────────────────────────────────────────────
   const handleChatDeleted = useCallback((deletedId: string) => {
@@ -314,9 +314,11 @@ export default function AIAssistantPage() {
       <div className="flex flex-col flex-1 min-w-0 max-w-4xl mx-auto px-4 md:px-6 pb-4 overflow-hidden">
         {showHero && (
           <div className="flex-shrink-0">
-            <AIHero />
+            <AIHero 
+              subtitle="Your AI assistant for managing projects, communicating with freelancers, planning work, and organizing your business." 
+            />
             <div className="mb-1.5">
-              <QuickActionsGrid actions={FREELANCER_QUICK_ACTIONS} onActionSelect={handleActionSelect} disabled={isLoading} />
+              <QuickActionsGrid actions={CLIENT_QUICK_ACTIONS} onActionSelect={handleActionSelect} disabled={isLoading} />
             </div>
           </div>
         )}
@@ -335,13 +337,13 @@ export default function AIAssistantPage() {
       </div>
 
       <AIActionDialog
-        open={isProposalDialogOpen}
-        onOpenChange={handleProposalDialogChange}
-        onActionGenerated={handleProposalStream}
-        title="Write Proposal"
-        description="Provide project details and ClientHub AI will generate a tailored, professional proposal."
-        actionType="proposal"
-        submitLabel="Generate Proposal"
+        open={isActionDialogOpen}
+        onOpenChange={handleActionDialogChange}
+        onActionGenerated={handleActionStream}
+        title="Write Project Description"
+        description="Provide project details and ClientHub AI will generate a tailored, professional project brief."
+        actionType="project_description"
+        submitLabel="Generate Description"
       />
     </div>
   );

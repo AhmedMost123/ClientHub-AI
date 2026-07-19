@@ -1,7 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
 
-export function AIHero() {
+interface AIHeroProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function AIHero({ 
+  title = "AI Assistant", 
+  subtitle = "Your freelancer copilot for proposals, client communication, pricing and productivity." 
+}: AIHeroProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center pt-4 pb-3 md:pt-5 md:pb-4 gap-2">
       <Badge variant="secondary" className="px-3 py-1 text-xs font-medium gap-1.5 rounded-full mb-0.5">
@@ -20,12 +28,12 @@ export function AIHero() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-none">
-          AI Assistant
+          {title}
         </h1>
       </div>
 
       <p className="text-muted-foreground text-sm md:text-base max-w-[480px] mx-auto leading-relaxed">
-        Your freelancer copilot for proposals, client communication, pricing and productivity.
+        {subtitle}
       </p>
     </div>
   );
