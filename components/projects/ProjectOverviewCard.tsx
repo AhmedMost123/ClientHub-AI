@@ -26,6 +26,7 @@ const statusConfig: Record<ProjectStatus, { label: string; className: string }> 
   REVIEW: { label: "Review", className: "bg-orange-500/10 text-orange-500" },
   COMPLETED: { label: "Completed", className: "bg-green-500/10 text-green-500" },
   CANCELLED: { label: "Cancelled", className: "bg-red-500/10 text-red-500" },
+  PENDING: { label: "Pending", className: "bg-muted text-muted-foreground" },
 };
 
 export function ProjectOverviewCard({ project }: ProjectCardProps) {

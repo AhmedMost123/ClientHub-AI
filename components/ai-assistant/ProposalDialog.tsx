@@ -82,7 +82,7 @@ export function ProposalDialog({ open, onOpenChange, onGenerate }: ProposalDialo
             </div>
             <div className="grid gap-2">
               <Label htmlFor="tone">Tone</Label>
-              <Select value={tone} onValueChange={setTone}>
+              <Select value={tone} onValueChange={(val) => setTone(val || "")}>
                 <SelectTrigger id="tone">
                   <SelectValue placeholder="Select tone" />
                 </SelectTrigger>

@@ -149,7 +149,7 @@ export default function ProjectCard({ project, role }: Props) {
 
         <div className="flex items-center gap-2 mt-auto pt-4 border-t">
           <Button asChild variant="default" className="flex-1">
-            <Link href={`/projects/${project.id}`}>
+            <Link href={role === "CLIENT" ? `/client/projects/${project.id}` : `/projects/${project.id}`}>
               Open
             </Link>
           </Button>

@@ -70,6 +70,50 @@ export const userRepository = {
       ],
     });
   },
+
+  async searchFreelancers(query: string) {
+    const search = query.trim();
+
+    if (!search) return [];
+
+    return prisma.user.findMany({
+      where: {
+        role: UserRole.FREELANCER,
+        OR: [
+          {
+            email: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            name: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+      },
+
+      take: 10,
+
+      orderBy: [
+        {
+          name: "asc",
+        },
+        {
+          email: "asc",
+        },
+      ],
+    });
+  },
 };
 
-export const { findUserByEmail, createUser, searchClients } = userRepository;
+export const { findUserByEmail, createUser, searchClients, searchFreelancers } = userRepository;

@@ -59,7 +59,7 @@ model Project {
   updatedAt      DateTime            @updatedAt
   customerName   String
   linkedClientId String?
-  ownerId        String
+  ownerId        String?
   archivedAt     DateTime?
   /// NEW
   isArchived     Boolean             @default(false)
@@ -69,7 +69,7 @@ model Project {
   invoices       Invoice[]
   notifications  Notification[]
   linkedClient   User?               @relation("SharedProjects", fields: [linkedClientId], references: [id])
-  owner          User                @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner          User?               @relation("FreelancerProjects", fields: [ownerId], references: [id], onDelete: Cascade)
   invitations    ProjectInvitation[]
   tasks          Task[]
 
@@ -272,6 +272,7 @@ enum ClientStatus {
 }
 
 enum ProjectStatus {
+  PENDING
   PLANNING
   IN_PROGRESS
   REVIEW

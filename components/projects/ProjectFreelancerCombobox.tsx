@@ -1,14 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, ChevronsUpDown, Loader2, X, UserPlus } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, X, MailPlus } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
-// Make sure to add getClient to your imports from the actions file
-import type { ClientSearchResult } from "@/types/client";
-import { searchProjectClients } from "@/lib/actions/search-clients";
-import { getClient } from "@/lib/actions/get-client";
-
+import { searchProjectFreelancers } from "@/lib/actions/search-freelancers";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -34,54 +30,33 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-export function ProjectClientCombobox() {
+export function ProjectFreelancerCombobox() {
   const { control, setValue, watch } = useFormContext();
 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [clients, setClients] = useState<ClientSearchResult[]>([]);
+  const [freelancers, setFreelancers] = useState<any[]>([]);
 
-  // Watch the form value at the component level to trigger the useEffect properly
-  const linkedClientId = watch("linkedClientId");
-
-  // Fix 1 & Fix 4: Store the fetched client based on field value changes
-  const [selected, setSelected] = useState<ClientSearchResult | null>(null);
-
-  useEffect(() => {
-    if (!linkedClientId) {
-      return;
-    }
-
-    let isMounted = true;
-    getClient(linkedClientId).then((result) => {
-      if (isMounted && result.success) {
-        setSelected(result.data);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [linkedClientId]);
+  const freelancerEmail = watch("freelancerEmail");
 
   useEffect(() => {
     if (!open) return;
 
     const timeout = setTimeout(async () => {
       if (!query.trim()) {
-        setClients([]);
+        setFreelancers([]);
         return;
       }
 
       setLoading(true);
 
-      const result = await searchProjectClients(query);
+      const result = await searchProjectFreelancers(query);
 
       if (result.success) {
-        setClients(result.data);
+        setFreelancers(result.data);
       } else {
-        setClients([]);
+        setFreelancers([]);
       }
 
       setLoading(false);
@@ -93,19 +68,11 @@ export function ProjectClientCombobox() {
   return (
     <FormField
       control={control}
-      name="linkedClientId"
+      name="freelancerEmail"
       render={({ field }) => {
-        // Fix 2: Check if it's in the current search array, if not, fallback to the fetched 'selected' state
-        const listSelected =
-          clients.find((client) => client.id === field.value) ?? null;
-
-        const displayClient = !field.value 
-          ? null 
-          : (listSelected ?? (selected?.id === field.value ? selected : null));
-
         return (
           <FormItem className="flex flex-col space-y-2">
-            <FormLabel>Linked Client</FormLabel>
+            <FormLabel>Freelancer Email (Optional)</FormLabel>
 
             <div className="flex items-center gap-2">
               <Popover open={open} onOpenChange={setOpen}>
@@ -121,12 +88,10 @@ export function ProjectClientCombobox() {
                           !field.value && "text-muted-foreground",
                         )}
                       >
-                        {displayClient ? (
-                          <span className="truncate">
-                            {displayClient.name} ({displayClient.email})
-                          </span>
+                        {field.value ? (
+                          <span className="truncate">{field.value}</span>
                         ) : (
-                          "Search client by email..."
+                          "Search by email or name..."
                         )}
 
                         <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
@@ -137,9 +102,16 @@ export function ProjectClientCombobox() {
                 <PopoverContent align="start" className="w-[420px] p-0">
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder="Type client's email..."
+                    placeholder="Type freelancer's email..."
                     value={query}
-                    onValueChange={setQuery}
+                    onValueChange={(val) => {
+                      setQuery(val);
+                      // Update the field value as they type if they want to invite someone not on the platform
+                      setValue("freelancerEmail", val, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                    }}
                   />
 
                   <CommandList>
@@ -151,28 +123,29 @@ export function ProjectClientCombobox() {
 
                     {!loading && (
                       <>
-                        <CommandEmpty>No clients found.</CommandEmpty>
+                        <CommandEmpty>
+                          No freelancer found. If the email is correct, we will send them an invite link.
+                        </CommandEmpty>
 
                         <CommandGroup>
-                          {clients.map((client) => (
+                          {freelancers.map((freelancer) => (
                             <CommandItem
-                              key={client.id}
-                              value={client.id}
+                              key={freelancer.id}
+                              value={freelancer.email}
                               onSelect={() => {
-                                setValue("linkedClientId", client.id, {
+                                setValue("freelancerEmail", freelancer.email, {
                                   shouldDirty: true,
                                   shouldValidate: true,
                                 });
 
-                                setSelected(client);
                                 setOpen(false);
                               }}
                             >
                               <Avatar className="mr-3 size-8">
                                 <AvatarFallback>
-                                  {client.name
+                                  {freelancer.name
                                     .split(" ")
-                                    .map((x) => x[0])
+                                    .map((x: string) => x[0])
                                     .join("")
                                     .slice(0, 2)}
                                 </AvatarFallback>
@@ -180,39 +153,24 @@ export function ProjectClientCombobox() {
 
                               <div className="flex flex-col">
                                 <span className="font-medium">
-                                  {client.name}
+                                  {freelancer.name}
                                 </span>
 
                                 <span className="text-xs text-muted-foreground">
-                                  {client.email}
+                                  {freelancer.email}
                                 </span>
                               </div>
 
                               <Check
                                 className={cn(
                                   "ml-auto size-4",
-                                  client.id === field.value
+                                  freelancer.email === field.value
                                     ? "opacity-100"
                                     : "opacity-0",
                                 )}
                               />
                             </CommandItem>
                           ))}
-
-                          {!loading && query.trim() && clients.length === 0 && (
-                            <CommandItem disabled className="gap-3 opacity-80">
-                              <UserPlus className="size-4" />
-
-                              <div className="flex flex-col">
-                                <span>No client found</span>
-
-                                <span className="text-xs text-muted-foreground">
-                                  You&apos;ll be able to invite this email in
-                                  the next step.
-                                </span>
-                              </div>
-                            </CommandItem>
-                          )}
                         </CommandGroup>
                       </>
                     )}
@@ -221,7 +179,7 @@ export function ProjectClientCombobox() {
               </PopoverContent>
             </Popover>
 
-            {displayClient && (
+            {field.value && (
               <Button
                 type="button"
                 variant="ghost"
@@ -230,9 +188,7 @@ export function ProjectClientCombobox() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  field.onChange(null);
-                  setSelected(null);
-                  setClients([]);
+                  field.onChange("");
                   setQuery("");
                 }}
               >
@@ -242,7 +198,7 @@ export function ProjectClientCombobox() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Leave empty to create an offline project.
+              If they are already registered, they will be invited to this project.
             </p>
 
             <FormMessage />

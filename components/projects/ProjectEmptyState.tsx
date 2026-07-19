@@ -21,7 +21,7 @@ export function ProjectEmptyState({ role }: ProjectEmptyStateProps) {
           : "You don't have any active projects with us yet. Request a new project to get started."}
       </p>
       <Button asChild className="h-11 rounded-xl px-8 shadow-md hover:scale-105 transition-all" style={{ background: "var(--gradient-primary)" }}>
-        <Link href="/projects/new">
+        <Link href={role === "FREELANCER" ? "/projects/new" : "/client/projects/new"}>
           {role === "FREELANCER" ? "Create Project" : "Request Project"}
         </Link>
       </Button>

@@ -10,6 +10,7 @@ const statusLabels: Record<ProjectStatus, string> = {
   REVIEW: "In Review",
   COMPLETED: "Completed",
   CANCELLED: "Cancelled",
+  PENDING: "Pending",
 };
 
 const statusVariants: Record<ProjectStatus, "default" | "secondary" | "outline"> = {
@@ -18,6 +19,7 @@ const statusVariants: Record<ProjectStatus, "default" | "secondary" | "outline">
   REVIEW: "secondary",
   COMPLETED: "outline",
   CANCELLED: "outline",
+  PENDING: "outline",
 };
 
 type ProjectCardProps = {
