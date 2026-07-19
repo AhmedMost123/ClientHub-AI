@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -46,14 +46,14 @@ export function LoginForm() {
         return;
       }
 
-      console.log(result);
-
-      if (result?.error) {
-        setServerError("Invalid email or password.");
-        return;
+      const session = await getSession();
+      
+      if (session?.user?.role) {
+        router.replace(getRedirectPathForRole(session.user.role as any));
+      } else {
+        router.replace("/dashboard");
       }
-
-      router.replace("/dashboard");
+      
       router.refresh();
     } catch {
       setServerError("Something went wrong. Please try again.");

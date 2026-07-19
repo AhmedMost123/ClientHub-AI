@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { getRedirectPathForRole } from "@/lib/auth/redirects";
 
 export async function middleware(req: NextRequest) {
-  const token =
-    req.cookies.get("authjs.session-token")?.value ||
-    req.cookies.get("__Secure-authjs.session-token")?.value;
-
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;
+  const role = token?.role as "FREELANCER" | "CLIENT" | "ADMIN" | undefined;
   const isAuthPage =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/register");
@@ -27,12 +27,25 @@ export async function middleware(req: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
   }
 
   // Protect protected routes
   if (isProtectedRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // Role-based route protection
+  if (isLoggedIn) {
+    if (isDashboardPage && role !== "FREELANCER") {
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+    }
+    if (isClientPage && role !== "CLIENT") {
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+    }
+    if (isAdminPage && role !== "ADMIN") {
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+    }
   }
 
   // Check if account is disabled (do not trust old JWT)
