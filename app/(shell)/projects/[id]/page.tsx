@@ -67,6 +67,7 @@ export default async function ProjectDetailsPage({
       <div id="conversation-section">
         <Conversation
           currentUserId={session.user.id}
+          currentUserName={session.user.name ?? null}
           projectId={project.id}
           hasLinkedClient={!!project.linkedClientId}
           conversation={project.conversation}

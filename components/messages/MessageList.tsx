@@ -17,14 +17,16 @@ interface Message {
     name: string | null;
   };
   files: ChatFile[];
+  _status?: "sending" | "sent" | "failed";
 }
 
 interface Props {
   currentUserId: string;
   messages: Message[];
+  onRetry: (messageId: string) => void;
 }
 
-export default function MessageList({ currentUserId, messages }: Props) {
+export default function MessageList({ currentUserId, messages, onRetry }: Props) {
   return (
     <div className="space-y-4">
       {messages.map((message) => (
@@ -35,6 +37,8 @@ export default function MessageList({ currentUserId, messages }: Props) {
           content={message.content}
           createdAt={message.createdAt}
           files={message.files}
+          status={message._status}
+          onRetry={message._status === "failed" ? () => onRetry(message.id) : undefined}
         />
       ))}
     </div>
