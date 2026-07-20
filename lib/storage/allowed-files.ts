@@ -42,3 +42,34 @@ export const ALLOWED_MIME_TYPES = [
   ...DOCUMENT_TYPES,
   ...VIDEO_TYPES,
 ];
+
+/**
+ * Maps every allowed MIME type to a canonical, safe file extension.
+ * Used to derive storage filenames from MIME type rather than user input,
+ * preventing path-traversal and extension-spoofing attacks.
+ */
+export const MIME_TO_EXTENSION: Record<string, string> = {
+  // Images
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  // Documents
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "application/vnd.ms-powerpoint": "ppt",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+    "pptx",
+  "text/plain": "txt",
+  "text/csv": "csv",
+  "application/zip": "zip",
+  "application/x-zip-compressed": "zip",
+  // Videos
+  "video/mp4": "mp4",
+  "video/quicktime": "mov",
+  "video/webm": "webm",
+};

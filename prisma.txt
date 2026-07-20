@@ -22,7 +22,7 @@ npx prisma migrate reset
 
 npx prisma db seed
 
-
+tree /F /A
 
 import { PrismaClient, $Enums } from "@/lib/generated/prisma/client";
 

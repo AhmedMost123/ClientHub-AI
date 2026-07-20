@@ -1,10 +1,14 @@
 import { supabaseAdmin } from "@/lib/supabase/server";
 
-const BUCKET = process.env.SUPABASE_STORAGE_BUCKET!;
-
 export async function deleteFile(storagePath: string) {
+  const bucket = process.env.SUPABASE_STORAGE_BUCKET;
+
+  if (!bucket) {
+    throw new Error("Supabase storage bucket is not configured.");
+  }
+
   const { error } = await supabaseAdmin.storage
-    .from(BUCKET)
+    .from(bucket)
     .remove([storagePath]);
 
   if (error) {
