@@ -106,6 +106,7 @@ export function NotificationBell() {
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      {/* @ts-expect-error type issue with DropdownMenuTrigger */}
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

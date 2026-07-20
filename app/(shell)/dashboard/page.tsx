@@ -1,4 +1,5 @@
 import { requireFreelancer } from "@/lib/auth/authorization";
+import { getDashboardData } from "@/lib/actions/get-dashboard-data";
 import ActiveProjects from "@/components/dashboard/ActiveProjects";
 import { AIWidget } from "@/components/dashboard/AIWidget";
 import { CalendarPreview } from "@/components/dashboard/CalendarPreview";
@@ -13,31 +14,35 @@ import { TaskProgressWidget } from "@/components/dashboard/TaskProgress";
 import { PageContainer } from "@/components/shared/PageContainer";
 
 export default async function DashboardPage() {
-  await requireFreelancer();
+  const session = await requireFreelancer();
+
+  // Single parallel fetch for all dashboard data
+  const result = await getDashboardData();
+  const data = result.success ? result.data : null;
 
   return (
     <PageContainer className="space-y-8">
-      <DashboardHeader />
-      <StatsOverview />
+      <DashboardHeader userName={session.user.name ?? "Freelancer"} data={data} />
+      <StatsOverview stats={data?.stats ?? null} />
 
       <section className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <RevenueChart />
+          <RevenueChart data={data?.revenueChart ?? []} />
         </div>
-        <Deadlines />
+        <Deadlines deadlines={data?.deadlines ?? []} />
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <div className="lg:col-span-2">
-          <RecentActivity />
+          <RecentActivity activities={data?.activities ?? []} />
         </div>
-        <AIWidget />
+        <AIWidget pendingInvoicesCount={data?.stats.pendingInvoicesCount ?? 0} />
       </section>
 
       <ActiveProjects />
 
       <section className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <RecentInvoices />
+        <RecentInvoices invoices={data?.recentInvoices ?? []} />
         <TaskProgressWidget />
         <CalendarPreview />
       </section>

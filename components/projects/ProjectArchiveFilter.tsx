@@ -13,7 +13,7 @@ export function ProjectArchiveFilter({ defaultArchived }: Props) {
   const searchParams = useSearchParams();
 
   const handleToggle = (checked: boolean) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
     if (checked) {
       params.set("archived", "true");
     } else {

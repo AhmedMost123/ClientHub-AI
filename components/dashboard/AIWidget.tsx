@@ -1,6 +1,8 @@
 "use client";
 
 import { Send, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +10,24 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type AIWidgetProps = {
+  /** Real pending invoice count from the dashboard data layer. */
+  pendingInvoicesCount: number;
   className?: string;
 };
 
-export function AIWidget({ className }: AIWidgetProps) {
+export function AIWidget({ pendingInvoicesCount, className }: AIWidgetProps) {
+  const router = useRouter();
+  const [input, setInput] = useState("");
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const message = input.trim();
+    if (!message) return;
+    // Navigate to the AI Assistant and pre-fill the message via URL param.
+    // The AI page reads this param on mount, populates the input, and sends it.
+    router.push(`/ai-assistant?q=${encodeURIComponent(message)}`);
+  }
+
   return (
     <Card
       className={cn(
@@ -37,16 +53,28 @@ export function AIWidget({ className }: AIWidgetProps) {
       </CardHeader>
       <CardContent className="relative space-y-4">
         <div className="rounded-xl border border-border/60 bg-muted/40 p-4 text-sm leading-relaxed text-foreground/90 transition-colors duration-200 hover:bg-muted/60">
-          I noticed you have{" "}
-          <span className="font-semibold text-foreground">3 invoices</span>{" "}
-          waiting. Would you like me to remind those clients?
+          {pendingInvoicesCount > 0 ? (
+            <>
+              I noticed you have{" "}
+              <span className="font-semibold text-foreground">
+                {pendingInvoicesCount} pending {pendingInvoicesCount === 1 ? "invoice" : "invoices"}
+              </span>
+              . Would you like me to draft a payment reminder?
+            </>
+          ) : (
+            <>
+              Ask me anything — I can help you write proposals, summarise projects, or draft client messages.
+            </>
+          )}
         </div>
         <form
           className="flex gap-2"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={handleSubmit}
           aria-label="Ask Hub AI"
         >
           <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Ask AI anything..."
             className="h-10 rounded-xl bg-background/80 transition-all duration-200 focus:bg-background focus:ring-2 focus:ring-sidebar-accent"
             aria-label="AI prompt"
@@ -54,7 +82,8 @@ export function AIWidget({ className }: AIWidgetProps) {
           <Button
             type="submit"
             size="icon"
-            className="size-10 shrink-0 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105"
+            disabled={!input.trim()}
+            className="size-10 shrink-0 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105 disabled:opacity-50"
             style={{ background: "var(--gradient-brand)" }}
             aria-label="Send message"
           >

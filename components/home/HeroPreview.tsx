@@ -34,18 +34,18 @@ export function HeroPreview() {
             </p>
           </div>
           <div className="h-50 w-full">
-            <RevenueChart />
+            <RevenueChart data={[]} />
           </div>
         </div>
 
         {/* AI Widget */}
         <div className="card-premium rounded-2xl bg-card p-5">
-          <AIWidget />
+          <AIWidget pendingInvoicesCount={0} />
         </div>
 
         {/* Recent Invoices */}
         <div className="card-premium rounded-2xl bg-card p-5 md:col-span-2">
-          <RecentInvoices />
+          <RecentInvoices invoices={[]} />
         </div>
 
         {/* Project Cards */}

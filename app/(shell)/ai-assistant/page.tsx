@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { AIHero } from "@/components/ai-assistant/AIHero";
 import { QuickActionsGrid, FREELANCER_QUICK_ACTIONS, QuickAction } from "@/components/ai-assistant/QuickActionsGrid";
 import { AIChat } from "@/components/ai-assistant/AIChat";
@@ -22,6 +23,9 @@ export default function AIAssistantPage() {
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // Ensures the ?q= auto-send only fires once per page load
+  const autoSentRef = useRef(false);
+  const searchParams = useSearchParams();
 
   // ─── Load chat history on mount ───────────────────────────────────────────
   useEffect(() => {
@@ -40,6 +44,22 @@ export default function AIAssistantPage() {
     };
     loadHistory();
   }, []);
+
+  // ─── Auto-send message from ?q= param (set by the dashboard AI widget) ──────
+  useEffect(() => {
+    if (autoSentRef.current) return;
+    if (!searchParams) return;
+    const q = searchParams.get("q");
+    if (!q) return;
+    autoSentRef.current = true;
+    handleSend(q);
+    // Remove the param from the URL without triggering a reload
+    const url = new URL(window.location.href);
+    url.searchParams.delete("q");
+    window.history.replaceState({}, "", url.toString());
+  // handleSend is stable via useCallback; searchParams is from the URL
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // ─── Select a conversation ─────────────────────────────────────────────────
   const handleSelectChat = useCallback(async (selectedChatId: string) => {

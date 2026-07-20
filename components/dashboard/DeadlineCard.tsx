@@ -1,13 +1,34 @@
 import { Badge } from "@/components/ui/badge";
-import type { Deadline } from "@/lib/mock-data";
+import type { DeadlineItem } from "@/lib/actions/get-dashboard-data";
 import { cn } from "@/lib/utils";
 
 type DeadlineCardProps = {
-  deadline: Deadline;
+  deadline: DeadlineItem;
   className?: string;
 };
 
+/**
+ * Format a real Date into a human-readable deadline label.
+ * Returns "Overdue", "Today", "Tomorrow", or a short date string.
+ */
+function formatDeadlineLabel(date: Date): { label: string; urgency: "overdue" | "today" | "soon" | "future" } {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diffDays = Math.round((target.getTime() - today.getTime()) / 86_400_000);
+
+  if (diffDays < 0) return { label: "Overdue", urgency: "overdue" };
+  if (diffDays === 0) return { label: "Today", urgency: "today" };
+  if (diffDays === 1) return { label: "Tomorrow", urgency: "soon" };
+  return {
+    label: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    urgency: "future",
+  };
+}
+
 export function DeadlineCard({ deadline, className }: DeadlineCardProps) {
+  const { label, urgency } = formatDeadlineLabel(deadline.dueDate);
+
   return (
     <div
       className={cn(
@@ -20,10 +41,13 @@ export function DeadlineCard({ deadline, className }: DeadlineCardProps) {
         <p className="mt-0.5 text-sm text-muted-foreground">{deadline.company}</p>
       </div>
       <Badge
-        variant={deadline.urgent ? "destructive" : "secondary"}
-        className="shrink-0"
+        variant={urgency === "overdue" || urgency === "today" ? "destructive" : "secondary"}
+        className={cn(
+          "shrink-0",
+          urgency === "overdue" && "opacity-70",
+        )}
       >
-        {deadline.date}
+        {label}
       </Badge>
     </div>
   );

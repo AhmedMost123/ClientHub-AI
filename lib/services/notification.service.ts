@@ -132,4 +132,59 @@ export const notificationService = {
       event: NotificationEvent.FILE_UPLOADED,
     });
   },
+
+  async invoiceCreated(
+    clientId: string,
+    freelancerName: string,
+    amount: number,
+    projectTitle: string,
+    projectId: string,
+    invoiceId: string,
+  ) {
+    return createAndSend({
+      userId: clientId,
+      projectId,
+      title: "🧾 New Invoice Request",
+      message: `${freelancerName} requested payment of $${amount.toLocaleString()} for ${projectTitle}.`,
+      link: `/notifications?invoiceId=${invoiceId}`,
+      type: NotificationType.INFO,
+      event: NotificationEvent.INVOICE_CREATED,
+    });
+  },
+
+  async invoicePaid(
+    freelancerId: string,
+    clientName: string,
+    amount: number,
+    projectTitle: string,
+    projectId: string,
+  ) {
+    return createAndSend({
+      userId: freelancerId,
+      projectId,
+      title: "💰 Invoice Paid",
+      message: `${clientName} paid the invoice for ${projectTitle} ($${amount.toLocaleString()}).`,
+      link: `/projects/${projectId}`,
+      type: NotificationType.SUCCESS,
+      event: NotificationEvent.INVOICE_PAID,
+    });
+  },
+
+  async invoiceRejected(
+    freelancerId: string,
+    clientName: string,
+    projectTitle: string,
+    amount: number,
+    projectId: string,
+  ) {
+    return createAndSend({
+      userId: freelancerId,
+      projectId,
+      title: "❌ Invoice Rejected",
+      message: `${clientName} rejected the invoice for ${projectTitle} ($${amount.toLocaleString()}).`,
+      link: `/projects/${projectId}`,
+      type: NotificationType.WARNING,
+      event: NotificationEvent.INVOICE_REJECTED,
+    });
+  },
 };

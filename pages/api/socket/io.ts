@@ -97,14 +97,20 @@ const ioHandler = (req: NextApiRequest, res: any) => { // eslint-disable-line @t
         });
 
         if (!token) {
-          return next(new Error("Unauthorized"));
+          const authErr = new Error("Unauthorized");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (authErr as any).data = { code: "UNAUTHORIZED" };
+          return next(authErr);
         }
 
         socket.data.user = token;
         next();
       } catch (error) {
         console.error("[Socket] Auth Error:", error);
-        next(new Error("Authentication error"));
+        const serverErr = new Error("Authentication error");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (serverErr as any).data = { code: "AUTH_ERROR" };
+        next(serverErr);
       }
     });
 

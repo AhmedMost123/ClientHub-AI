@@ -111,7 +111,7 @@ export function SidebarContent({
             <SidebarItem
               key={item.href}
               {...item}
-              isActive={isActiveRoute(pathname, item.href)}
+              isActive={isActiveRoute(pathname as string, item.href)}
               collapsed={collapsed}
               onNavigate={onNavigate}
               badge={item.name === "Notifications" && unreadCount > 0 ? unreadCount : item.badge}
@@ -126,7 +126,7 @@ export function SidebarContent({
               <SidebarItem
                 key={item.href}
                 {...item}
-                isActive={isActiveRoute(pathname, item.href)}
+                isActive={isActiveRoute(pathname as string, item.href)}
                 collapsed={collapsed}
                 onNavigate={onNavigate}
               />
