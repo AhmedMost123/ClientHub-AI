@@ -203,8 +203,8 @@ function TaskCard({ task, onToggle, onEdit, onDelete, onAskAI, onDuplicate, isOp
                 {isToday(new Date(task.dueDate))
                   ? "Due today"
                   : isTomorrow(new Date(task.dueDate))
-                  ? "Due tomorrow"
-                  : format(new Date(task.dueDate), "MMM d, yyyy")}
+                    ? "Due tomorrow"
+                    : format(new Date(task.dueDate), "MMM d, yyyy")}
               </span>
             </div>
           )}
@@ -678,14 +678,14 @@ export default function TasksPageClient({ initialTasks, projects }: Props) {
           prev.map((t) =>
             t.id === editingTask.id
               ? {
-                  ...t,
-                  title: data.title,
-                  description: data.description ?? null,
-                  status: data.status,
-                  priority: data.priority,
-                  estimatedHours: data.estimatedHours ?? null,
-                  dueDate: data.dueDate ?? null,
-                }
+                ...t,
+                title: data.title,
+                description: data.description ?? null,
+                status: data.status,
+                priority: data.priority,
+                estimatedHours: data.estimatedHours ?? null,
+                dueDate: data.dueDate ?? null,
+              }
               : t
           )
         );
@@ -1124,14 +1124,14 @@ export default function TasksPageClient({ initialTasks, projects }: Props) {
         defaultValues={
           editingTask
             ? {
-                projectId: editingTask.projectId,
-                title: editingTask.title,
-                description: editingTask.description ?? undefined,
-                status: editingTask.status,
-                priority: editingTask.priority,
-                estimatedHours: editingTask.estimatedHours ?? undefined,
-                dueDate: editingTask.dueDate ?? undefined,
-              }
+              projectId: editingTask.projectId,
+              title: editingTask.title,
+              description: editingTask.description ?? undefined,
+              status: editingTask.status,
+              priority: editingTask.priority,
+              estimatedHours: editingTask.estimatedHours ?? undefined,
+              dueDate: editingTask.dueDate ?? undefined,
+            }
             : undefined
         }
         requireProjectSelection={!editingTask}
