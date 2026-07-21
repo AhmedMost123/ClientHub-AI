@@ -49,6 +49,7 @@ export async function toggleTask(taskId: string) {
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${task.projectId}`);
+    revalidatePath("/tasks");
     return success(updatedTask, "Task status toggled");
   } catch (error: any) {
     console.error("Failed to toggle task:", error);

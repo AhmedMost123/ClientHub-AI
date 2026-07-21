@@ -49,6 +49,7 @@ export async function createTask(data: CreateTaskInput) {
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${data.projectId}`);
+    revalidatePath("/tasks");
     return success(task, "Task created successfully");
   } catch (error: any) {
     console.error("Failed to create task:", error);

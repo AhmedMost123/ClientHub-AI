@@ -47,6 +47,7 @@ export async function updateTask(data: UpdateTaskInput) {
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${data.projectId}`);
+    revalidatePath("/tasks");
     return success(task, "Task updated successfully");
   } catch (error: any) {
     console.error("Failed to update task:", error);

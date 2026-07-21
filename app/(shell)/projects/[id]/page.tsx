@@ -93,7 +93,7 @@ export default async function ProjectDetailsPage({
       <section className="rounded-2xl border bg-card p-6 shadow-sm">
         <h2 className="mb-5 text-lg font-semibold tracking-tight">Invoices</h2>
         <InvoiceList
-          invoices={(project.invoices ?? []).map((inv) => ({
+          invoices={(project.invoices ?? []).map((inv: any) => ({
             ...inv,
             amount: Number(inv.amount),
           }))}
