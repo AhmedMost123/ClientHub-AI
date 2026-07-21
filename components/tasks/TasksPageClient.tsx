@@ -340,6 +340,15 @@ function StatsCard({
   active: boolean;
   onClick: () => void;
 }) {
+  const iconStyles: Record<string, { bg: string; text: string }> = {
+    "bg-primary": { bg: "bg-primary/10", text: "text-primary" },
+    "bg-blue-500": { bg: "bg-blue-500/10", text: "text-blue-500" },
+    "bg-emerald-500": { bg: "bg-emerald-500/10", text: "text-emerald-500" },
+    "bg-red-500": { bg: "bg-red-500/10", text: "text-red-500" },
+  };
+
+  const style = iconStyles[color] || { bg: color, text: "text-white" };
+
   return (
     <button
       type="button"
@@ -350,8 +359,8 @@ function StatsCard({
       )}
     >
       <div className="flex items-center justify-between">
-        <div className={`flex size-9 items-center justify-center rounded-xl ${color}`}>
-          <Icon className="size-4 text-white" />
+        <div className={cn("flex size-9 items-center justify-center rounded-xl", style.bg)}>
+          <Icon className={cn("size-4", style.text)} />
         </div>
         {active && <ChevronRight className="size-4 text-primary" />}
       </div>

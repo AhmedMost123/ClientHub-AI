@@ -29,12 +29,16 @@ type SidebarContentProps = {
   session: Session | null; // Accept server session
   collapsed?: boolean;
   onNavigate?: () => void;
+  activeProjectsCount?: number;
+  activeTasksCount?: number;
 };
 
 export function SidebarContent({
   session,
   collapsed = false,
   onNavigate,
+  activeProjectsCount,
+  activeTasksCount,
 }: SidebarContentProps) {
   const pathname = usePathname();
   const { toggleCollapsed } = useSidebar();
@@ -107,16 +111,28 @@ export function SidebarContent({
           className="scrollbar-thin flex-1 space-y-1 overflow-y-auto px-3 py-4"
           aria-label="Main navigation"
         >
-          {navigation.map((item) => (
-            <SidebarItem
-              key={item.href}
-              {...item}
-              isActive={isActiveRoute(pathname as string, item.href)}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-              badge={item.name === "Notifications" && unreadCount > 0 ? unreadCount : item.badge}
-            />
-          ))}
+          {navigation.map((item) => {
+            let badgeValue = item.badge;
+            
+            if (item.name === "Projects" && activeProjectsCount !== undefined) {
+              badgeValue = activeProjectsCount;
+            } else if (item.name === "Tasks" && activeTasksCount !== undefined) {
+              badgeValue = activeTasksCount;
+            } else if (item.name === "Notifications" && unreadCount > 0) {
+              badgeValue = unreadCount;
+            }
+
+            return (
+              <SidebarItem
+                key={item.href}
+                {...item}
+                isActive={isActiveRoute(pathname as string, item.href)}
+                collapsed={collapsed}
+                onNavigate={onNavigate}
+                badge={badgeValue}
+              />
+            );
+          })}
         </nav>
 
         {/* Bottom section */}
@@ -195,9 +211,11 @@ export function SidebarContent({
 
 interface SidebarProps {
   session: Session | null;
+  activeProjectsCount?: number;
+  activeTasksCount?: number;
 }
 
-export default function Sidebar({ session }: SidebarProps) {
+export default function Sidebar({ session, activeProjectsCount, activeTasksCount }: SidebarProps) {
   const { collapsed, sidebarWidth, mobileOpen, setMobileOpen } = useSidebar();
 
   return (
@@ -208,7 +226,12 @@ export default function Sidebar({ session }: SidebarProps) {
         style={{ width: sidebarWidth }}
         aria-label="Sidebar"
       >
-        <SidebarContent session={session} collapsed={collapsed} />
+        <SidebarContent 
+          session={session} 
+          collapsed={collapsed} 
+          activeProjectsCount={activeProjectsCount}
+          activeTasksCount={activeTasksCount}
+        />
       </aside>
 
       {/* Mobile Menu Button */}
@@ -234,6 +257,8 @@ export default function Sidebar({ session }: SidebarProps) {
             session={session}
             collapsed={false}
             onNavigate={() => setMobileOpen(false)}
+            activeProjectsCount={activeProjectsCount}
+            activeTasksCount={activeTasksCount}
           />
         </SheetContent>
       </Sheet>

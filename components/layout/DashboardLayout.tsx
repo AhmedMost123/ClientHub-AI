@@ -9,16 +9,24 @@ import { cn } from "@/lib/utils";
 function DashboardShell({
   children,
   session,
+  activeProjectsCount,
+  activeTasksCount,
 }: {
   children: React.ReactNode;
   session: Session | null;
+  activeProjectsCount?: number;
+  activeTasksCount?: number;
 }) {
   const { sidebarWidth } = useSidebar();
 
   return (
     <div className="relative min-h-screen">
       {/* 2. Pass the session prop down to the Sidebar to bypass useSession() */}
-      <Sidebar session={session} />
+      <Sidebar 
+        session={session} 
+        activeProjectsCount={activeProjectsCount}
+        activeTasksCount={activeTasksCount}
+      />
       <div
         className={cn(
           "flex min-h-screen flex-col transition-[margin,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
@@ -38,13 +46,23 @@ function DashboardShell({
 export function DashboardLayout({
   children,
   session,
+  activeProjectsCount,
+  activeTasksCount,
 }: {
   children: React.ReactNode;
   session: Session | null;
+  activeProjectsCount?: number;
+  activeTasksCount?: number;
 }) {
   return (
     <SidebarProvider>
-      <DashboardShell session={session}>{children}</DashboardShell>
+      <DashboardShell 
+        session={session}
+        activeProjectsCount={activeProjectsCount}
+        activeTasksCount={activeTasksCount}
+      >
+        {children}
+      </DashboardShell>
     </SidebarProvider>
   );
 }
