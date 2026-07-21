@@ -1,8 +1,45 @@
 import { FolderKanban, TrendingUp, DollarSign, MessageSquare } from "lucide-react";
-import { clientStats } from "@/lib/mock/client-dashboard";
+import type { ClientDashboardStats } from "@/lib/actions/get-client-dashboard-data";
 import { cn } from "@/lib/utils";
 
-export function ClientStats() {
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function StatCardSkeleton({ gradient }: { gradient: string }) {
+  return (
+    <div
+      className="card-interactive group relative overflow-hidden rounded-2xl p-6"
+      style={{ background: gradient }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex size-10 animate-pulse items-center justify-center rounded-xl bg-background/40" />
+      </div>
+      <div className="mt-5 space-y-2">
+        <div className="h-3 w-28 animate-pulse rounded-full bg-muted-foreground/20" />
+        <div className="h-8 w-16 animate-pulse rounded-full bg-muted-foreground/20" />
+        <div className="h-2.5 w-20 animate-pulse rounded-full bg-muted-foreground/10" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+interface ClientStatsProps {
+  stats: ClientDashboardStats | null;
+}
+
+export function ClientStats({ stats }: ClientStatsProps) {
+  if (stats === null) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCardSkeleton gradient="var(--gradient-card-violet)" />
+        <StatCardSkeleton gradient="var(--gradient-card-blue)" />
+        <StatCardSkeleton gradient="var(--gradient-card-amber)" />
+        <StatCardSkeleton gradient="var(--gradient-card-emerald)" />
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* Assigned Projects */}
@@ -19,7 +56,7 @@ export function ClientStats() {
         <div className="mt-5 space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Assigned Projects</p>
           <p className="text-3xl font-semibold tracking-tight tabular-nums">
-            {clientStats.assignedProjects}
+            {stats.assignedProjectsCount}
           </p>
           <p className="text-xs text-muted-foreground">Currently active</p>
         </div>
@@ -39,7 +76,7 @@ export function ClientStats() {
         <div className="mt-5 space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Overall Progress</p>
           <p className="text-3xl font-semibold tracking-tight tabular-nums">
-            {clientStats.overallProgress}%
+            {stats.overallProgress}%
           </p>
           <p className="text-xs text-muted-foreground">Across all projects</p>
         </div>
@@ -59,7 +96,7 @@ export function ClientStats() {
         <div className="mt-5 space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Pending Invoice</p>
           <p className="text-3xl font-semibold tracking-tight tabular-nums">
-            ${clientStats.pendingInvoice.toLocaleString()}
+            ${stats.pendingInvoiceTotal.toLocaleString()}
           </p>
           <p className="text-xs text-muted-foreground">Awaiting payment</p>
         </div>
@@ -79,7 +116,7 @@ export function ClientStats() {
         <div className="mt-5 space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Unread Messages</p>
           <p className="text-3xl font-semibold tracking-tight tabular-nums">
-            {clientStats.unreadMessages}
+            {stats.unreadMessagesCount}
           </p>
           <p className="text-xs text-muted-foreground">New updates</p>
         </div>

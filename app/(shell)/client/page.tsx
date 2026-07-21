@@ -1,4 +1,5 @@
 import { requireClient } from "@/lib/auth/authorization";
+import { getClientDashboardData } from "@/lib/actions/get-client-dashboard-data";
 import { auth } from "@/auth";
 import { Download } from "lucide-react";
 
@@ -12,6 +13,9 @@ import { ClientMessages } from "@/components/client/ClientMessages";
 export default async function ClientPortalPage() {
   await requireClient();
   const session = await auth();
+
+  const result = await getClientDashboardData();
+  const data = result.success ? result.data : null;
 
   return (
     <div className="space-y-8">
@@ -35,20 +39,23 @@ export default async function ClientPortalPage() {
       </div>
 
       {/* Statistics */}
-      <ClientStats />
+      <ClientStats stats={data?.stats ?? null} />
 
       {/* Main Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left Column - Projects */}
         <div className="lg:col-span-2">
-          <ClientProjects />
+          <ClientProjects projects={data?.projects ?? null} />
         </div>
 
         {/* Right Column */}
         <div className="space-y-6">
-          <ClientFiles />
-          <ClientInvoices />
-          <ClientMessages />
+          <ClientFiles files={data?.recentFiles ?? null} />
+          <ClientInvoices
+            invoice={data?.latestUnpaidInvoice ?? null}
+            totalCount={data?.unpaidInvoicesCount ?? 0}
+          />
+          <ClientMessages messages={data?.recentMessages ?? null} />
         </div>
       </div>
     </div>
