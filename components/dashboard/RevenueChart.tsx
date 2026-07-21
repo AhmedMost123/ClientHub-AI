@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import type { RevenueChartPoint } from "@/lib/actions/get-dashboard-data";
+import type { RevenueChartPoint } from "@/lib/actions/dashboard/get-dashboard-data";
 import { TrendingUp } from "lucide-react";
 
 type RevenueChartProps = {

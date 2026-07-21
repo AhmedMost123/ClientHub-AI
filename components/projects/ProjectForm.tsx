@@ -28,8 +28,8 @@ import { ProjectDatePicker } from "./ProjectDatePicker";
 import { ProjectClientCombobox } from "./ProjectClientCombobox";
 
 import { CreateProjectInput, CreateProjectSchema } from "@/lib/validations/project";
-import { createProject } from "@/lib/actions/create-project";
-import { updateProject } from "@/lib/actions/update-project";
+import { createProject } from "@/lib/actions/project/create-project";
+import { updateProject } from "@/lib/actions/project/update-project";
 
 export interface ProjectFormProps {
   mode: "create" | "edit";

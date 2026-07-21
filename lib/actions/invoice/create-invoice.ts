@@ -3,7 +3,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { revalidatePath } from "next/cache";
 import { CreateInvoiceSchema, CreateInvoiceInput } from "@/lib/validations/invoice";
 import { invoiceRepository } from "@/lib/repositories/invoice.repository";

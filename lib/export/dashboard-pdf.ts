@@ -6,7 +6,7 @@ import type {
   DashboardStats,
   RecentInvoiceItem,
   ActivityItem,
-} from "@/lib/actions/get-dashboard-data";
+} from "@/lib/actions/dashboard/get-dashboard-data";
 import { format } from "date-fns";
 
 type ExportData = {

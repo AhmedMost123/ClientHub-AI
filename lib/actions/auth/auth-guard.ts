@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { failure } from "./action-result";
+import { failure } from "@/lib/utils/action-result";
 
 export async function requireUser() {
   const session = await auth();

@@ -3,7 +3,7 @@
 
 import { auth } from "@/auth";
 import { projectRepository } from "@/lib/repositories/project.repository";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { revalidatePath } from "next/cache";
 
 export async function markAsRead(projectId: string) {

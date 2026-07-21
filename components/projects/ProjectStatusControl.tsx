@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateProjectStatus } from "@/lib/actions/update-project-status";
+import { updateProjectStatus } from "@/lib/actions/project/update-project-status";
 
 const STATUS_LABELS: Record<ProjectStatus, string> = {
   PENDING: "Pending",

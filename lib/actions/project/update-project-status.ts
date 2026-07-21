@@ -7,7 +7,7 @@ import { projectRepository } from "@/lib/repositories/project.repository";
 import { invoiceRepository } from "@/lib/repositories/invoice.repository";
 import { notificationService } from "@/lib/services/notification.service";
 import { ProjectStatus, InvoiceStatus } from "@prisma/client";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { revalidatePath } from "next/cache";
 
 export async function updateProjectStatus(

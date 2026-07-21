@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import InvoiceDialog from "@/components/invoices/InvoiceDialog";
 import { InvoiceStatusBadge } from "@/components/invoices/InvoiceStatusBadge";
-import { createInvoice } from "@/lib/actions/create-invoice";
+import { createInvoice } from "@/lib/actions/invoice/create-invoice";
 import type { CreateInvoiceInput } from "@/lib/validations/invoice";
 
 export interface InvoiceItem {

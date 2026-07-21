@@ -10,7 +10,7 @@ import { ProjectEmptyState } from "@/components/projects/ProjectEmptyState";
 import ProjectGrid from "@/components/projects/ProjectGrid";
 import { ProjectArchiveFilter } from "@/components/projects/ProjectArchiveFilter";
 
-import { getProjects } from "@/lib/actions/get-projects";
+import { getProjects } from "@/lib/actions/project/get-projects";
 
 interface ClientProjectsPageProps {
   searchParams: { archived?: string };

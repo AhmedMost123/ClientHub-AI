@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { projectRepository } from "@/lib/repositories/project.repository";
 
 import { UpdateProjectInput } from "@/lib/validations/project";

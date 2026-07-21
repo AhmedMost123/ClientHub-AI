@@ -1,6 +1,6 @@
 import { Clock, DollarSign, FolderKanban, Receipt } from "lucide-react";
 import StatCard from "./StatCard";
-import type { DashboardStats } from "@/lib/actions/get-dashboard-data";
+import type { DashboardStats } from "@/lib/actions/dashboard/get-dashboard-data";
 import type { StatItem } from "@/lib/mock-data";
 
 type StatsOverviewProps = {

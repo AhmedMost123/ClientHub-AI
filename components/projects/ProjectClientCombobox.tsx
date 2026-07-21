@@ -6,8 +6,8 @@ import { useFormContext } from "react-hook-form";
 
 // Make sure to add getClient to your imports from the actions file
 import type { ClientSearchResult } from "@/types/client";
-import { searchProjectClients } from "@/lib/actions/search-clients";
-import { getClient } from "@/lib/actions/get-client";
+import { searchProjectClients } from "@/lib/actions/user/search-clients";
+import { getClient } from "@/lib/actions/user/get-client";
 
 import { cn } from "@/lib/utils";
 

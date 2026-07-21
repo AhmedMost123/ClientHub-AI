@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Check, ChevronsUpDown, Loader2, X, MailPlus } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
-import { searchProjectFreelancers } from "@/lib/actions/search-freelancers";
+import { searchProjectFreelancers } from "@/lib/actions/user/search-freelancers";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";

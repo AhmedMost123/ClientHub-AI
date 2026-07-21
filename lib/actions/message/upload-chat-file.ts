@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadFile } from "@/lib/storage/upload-file";
 import { projectRepository } from "@/lib/repositories/project.repository";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 
 export async function uploadChatFile(projectId: string, formData: FormData) {
   try {

@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { searchClients } from "@/lib/repositories/user.repository";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 
 export async function searchProjectClients(query: string) {
   const session = await auth();

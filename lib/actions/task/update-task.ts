@@ -4,7 +4,7 @@
 import { auth } from "@/auth";
 import { taskRepository } from "@/lib/repositories/task.repository";
 import { UpdateTaskSchema, UpdateTaskInput } from "@/lib/validations/task";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { projectRepository } from "@/lib/repositories/project.repository";

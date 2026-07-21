@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { deleteAccount } from "@/lib/actions/delete-account";
+import { deleteAccount } from "@/lib/actions/user/delete-account";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 

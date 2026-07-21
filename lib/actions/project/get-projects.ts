@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { success, failure } from "@/lib/actions/action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { projectRepository } from "@/lib/repositories/project.repository";
 import { ProjectStatus } from "@prisma/client";
 

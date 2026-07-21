@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { notificationRepository } from "@/lib/repositories/notification.repository";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { prisma } from "@/lib/prisma";
 
 export async function markNotificationRead(id: string) {

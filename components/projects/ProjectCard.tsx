@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { formatBudget, formatProjectDate } from "@/lib/project-utils";
-import { archiveProject } from "@/lib/actions/archive-project";
-import { deleteProject } from "@/lib/actions/delete-project";
-import { restoreProject } from "@/lib/actions/restore-project";
+import { archiveProject } from "@/lib/actions/project/archive-project";
+import { deleteProject } from "@/lib/actions/project/delete-project";
+import { restoreProject } from "@/lib/actions/project/restore-project";
 
 import { ProjectCardData } from "@/types/project";
 

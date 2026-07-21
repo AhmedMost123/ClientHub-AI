@@ -1,5 +1,5 @@
 import { requireFreelancer } from "@/lib/auth/authorization";
-import { getDashboardData } from "@/lib/actions/get-dashboard-data";
+import { getDashboardData } from "@/lib/actions/dashboard/get-dashboard-data";
 import ActiveProjects from "@/components/dashboard/ActiveProjects";
 import { AIWidget } from "@/components/dashboard/AIWidget";
 import { CalendarPreview } from "@/components/dashboard/CalendarPreview";

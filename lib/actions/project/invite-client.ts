@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { projectRepository } from "@/lib/repositories/project.repository";
 import { notificationService } from "@/lib/services/notification.service";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { projectInvitationRepository } from "@/lib/repositories/project-invitation.repository";
 
 export async function inviteClient(projectId: string, clientId: string) {

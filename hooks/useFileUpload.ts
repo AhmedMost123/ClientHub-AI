@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 
-import { uploadChatFile } from "@/lib/actions/upload-chat-file";
+import { uploadChatFile } from "@/lib/actions/message/upload-chat-file";
 
 import { UploadingFile } from "@/types/file-upload";
 

@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { useSocket } from "./socket-provider";
-import { getNotifications } from "@/lib/actions/get-notifications";
-import { markNotificationRead, markAllNotificationsRead } from "@/lib/actions/mark-notification-read";
+import { getNotifications } from "@/lib/actions/notification/get-notifications";
+import { markNotificationRead, markAllNotificationsRead } from "@/lib/actions/notification/mark-notification-read";
 import { toast } from "sonner";
 import { NotificationEvent, NotificationType } from "@prisma/client";
 

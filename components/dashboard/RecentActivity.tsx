@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { Bell } from "lucide-react";
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import type { ActivityItem } from "@/lib/actions/get-dashboard-data";
+import type { ActivityItem } from "@/lib/actions/dashboard/get-dashboard-data";
 import { NotificationEvent } from "@prisma/client";
 import { cn } from "@/lib/utils";
 

@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { success, failure } from "@/lib/actions/action-result";
+import { success, failure } from "@/lib/utils/action-result";
 import { InvoiceStatus, NotificationEvent } from "@prisma/client";
 
 // ─── Exported Types ────────────────────────────────────────────────────────────

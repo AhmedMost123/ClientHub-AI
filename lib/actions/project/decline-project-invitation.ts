@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { success, failure } from "./action-result";
+import { success, failure } from "@/lib/utils/action-result";
 
 import { projectInvitationRepository } from "@/lib/repositories/project-invitation.repository";
 import { notificationService } from "@/lib/services/notification.service";

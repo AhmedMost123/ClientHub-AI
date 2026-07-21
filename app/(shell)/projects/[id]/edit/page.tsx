@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/auth";
 
-import { getProject } from "@/lib/actions/get-project";
+import { getProject } from "@/lib/actions/project/get-project";
 import { ProjectForm } from "@/components/projects/ProjectForm";
 
 interface EditProjectPageProps {

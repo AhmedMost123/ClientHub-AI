@@ -4,7 +4,7 @@ import { Trash2 } from "lucide-react";
 
 import { useTransition } from "react";
 
-import { deleteTask } from "@/lib/actions/delete-task";
+import { deleteTask } from "@/lib/actions/task/delete-task";
 
 import { Button } from "@/components/ui/button";
 

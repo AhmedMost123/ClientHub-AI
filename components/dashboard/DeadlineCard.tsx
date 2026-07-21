@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { DeadlineItem } from "@/lib/actions/get-dashboard-data";
+import type { DeadlineItem } from "@/lib/actions/dashboard/get-dashboard-data";
 import { cn } from "@/lib/utils";
 
 type DeadlineCardProps = {

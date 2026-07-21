@@ -1,7 +1,7 @@
 import { Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import type { RecentInvoiceItem } from "@/lib/actions/get-dashboard-data";
+import type { RecentInvoiceItem } from "@/lib/actions/dashboard/get-dashboard-data";
 import { InvoiceStatus } from "@prisma/client";
 import { cn } from "@/lib/utils";
 

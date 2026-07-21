@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import EmptyConversation from "./EmptyConversation";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
-import { sendMessage } from "@/lib/actions/send-message";
+import { sendMessage } from "@/lib/actions/message/send-message";
 import { useSocket } from "@/components/providers/socket-provider";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

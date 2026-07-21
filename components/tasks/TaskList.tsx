@@ -9,10 +9,10 @@ import EmptyTasks from "./EmptyTasks";
 import TaskDialog, { TaskFormData } from "./TaskDialog";
 import DeleteTaskDialog from "./DeleteTaskDialog";
 
-import { createTask } from "@/lib/actions/create-task";
-import { updateTask } from "@/lib/actions/update-task";
-import { deleteTask } from "@/lib/actions/delete-task";
-import { toggleTask } from "@/lib/actions/toggle-task";
+import { createTask } from "@/lib/actions/task/create-task";
+import { updateTask } from "@/lib/actions/task/update-task";
+import { deleteTask } from "@/lib/actions/task/delete-task";
+import { toggleTask } from "@/lib/actions/task/toggle-task";
 
 export interface Task {
   id: string;

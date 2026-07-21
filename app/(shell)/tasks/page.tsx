@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 
 import { PageContainer } from "@/components/shared/PageContainer";
-import { getAllTasks } from "@/lib/actions/get-all-tasks";
-import { getProjects } from "@/lib/actions/get-projects";
+import { getAllTasks } from "@/lib/actions/task/get-all-tasks";
+import { getProjects } from "@/lib/actions/project/get-projects";
 import TasksPageClient from "@/components/tasks/TasksPageClient";
 
 export default async function TasksPage() {

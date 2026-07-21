@@ -18,9 +18,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { archiveProject } from "@/lib/actions/archive-project";
-import { deleteProject } from "@/lib/actions/delete-project";
-import { restoreProject } from "@/lib/actions/restore-project";
+import { archiveProject } from "@/lib/actions/project/archive-project";
+import { deleteProject } from "@/lib/actions/project/delete-project";
+import { restoreProject } from "@/lib/actions/project/restore-project";
 
 interface Props {
   role: "CLIENT" | "FREELANCER";

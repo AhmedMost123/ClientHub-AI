@@ -1,7 +1,7 @@
 import { CalendarClock } from "lucide-react";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { DeadlineCard } from "@/components/dashboard/DeadlineCard";
-import type { DeadlineItem } from "@/lib/actions/get-dashboard-data";
+import type { DeadlineItem } from "@/lib/actions/dashboard/get-dashboard-data";
 
 type DeadlinesProps = {
   deadlines: DeadlineItem[];

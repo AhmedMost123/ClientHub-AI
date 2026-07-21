@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import type { DashboardTimeRange } from "@/lib/types/dashboard";
 import { TIME_RANGE_LABELS } from "@/lib/types/dashboard";
 import { exportDashboardPdf } from "@/lib/export/dashboard-pdf";
-import type { DashboardData } from "@/lib/actions/get-dashboard-data";
+import type { DashboardData } from "@/lib/actions/dashboard/get-dashboard-data";
 
 function getGreeting(): string {
   const hour = new Date().getHours();

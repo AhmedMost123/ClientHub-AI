@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/auth";
-import { getProject } from "@/lib/actions/get-project";
+import { getProject } from "@/lib/actions/project/get-project";
 
 import ProjectHeader from "@/components/projects/ProjectHeader";
 import ProjectStats from "@/components/projects/ProjectStats";

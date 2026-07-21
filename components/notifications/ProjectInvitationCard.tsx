@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { acceptProjectInvitation } from "@/lib/actions/accept-project-invitation";
-import { declineProjectInvitation } from "@/lib/actions/decline-project-invitation";
+import { acceptProjectInvitation } from "@/lib/actions/project/accept-project-invitation";
+import { declineProjectInvitation } from "@/lib/actions/project/decline-project-invitation";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 
 interface ProjectInvitationCardProps {
