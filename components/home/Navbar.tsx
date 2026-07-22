@@ -21,7 +21,7 @@ export function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
+    await signOut({ callbackUrl: "/" });
   };
 
   return (
