@@ -8,6 +8,7 @@ export const authConfig = {
   session: {
     strategy: "jwt",
   },
+  trustHost: true, // <-- ADD THIS LINE
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
