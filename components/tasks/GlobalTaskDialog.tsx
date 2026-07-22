@@ -65,13 +65,6 @@ export default function GlobalTaskDialog({
   );
   const [selectedProjectId, setSelectedProjectId] = useState<string>(projectId || "");
 
-  useEffect(() => {
-    if (open) {
-      setStep(requireProjectSelection && !projectId ? "project" : "task");
-      setSelectedProjectId(projectId || "");
-    }
-  }, [open, projectId, requireProjectSelection]);
-
   const form = useForm<any>({
     resolver: zodResolver(CreateTaskSchema),
     defaultValues: {
@@ -85,14 +78,40 @@ export default function GlobalTaskDialog({
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      const pid = projectId || defaultValues?.projectId || (projects.length === 1 ? projects[0].id : "");
+      setSelectedProjectId(pid);
+      setStep(requireProjectSelection && !pid ? "project" : "task");
+      form.reset({
+        projectId: pid,
+        title: defaultValues?.title || "",
+        description: defaultValues?.description || "",
+        status: defaultValues?.status || "TODO",
+        priority: defaultValues?.priority || "MEDIUM",
+        estimatedHours: defaultValues?.estimatedHours ?? undefined,
+        dueDate: defaultValues?.dueDate || null,
+      });
+    }
+  }, [open, projectId, requireProjectSelection, defaultValues, projects, form]);
+
   const handleSubmit = async (data: TaskFormData) => {
+    const activeProjectId = selectedProjectId || data.projectId || projectId || "";
+    if (!activeProjectId) {
+      setStep("project");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await onSubmit({ ...data, projectId: selectedProjectId || data.projectId });
+      await onSubmit({
+        ...data,
+        projectId: activeProjectId,
+      });
       form.reset();
       onOpenChange(false);
     } catch (error) {
-      console.error(error);
+      console.error("Task submission error:", error);
     } finally {
       setIsSubmitting(false);
     }

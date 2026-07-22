@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TaskStatus, Priority } from "@prisma/client";
@@ -63,6 +63,20 @@ export default function TaskDialog({
       dueDate: defaultValues?.dueDate || null,
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        projectId,
+        title: defaultValues?.title || "",
+        description: defaultValues?.description || "",
+        status: defaultValues?.status || "TODO",
+        priority: defaultValues?.priority || "MEDIUM",
+        estimatedHours: defaultValues?.estimatedHours ?? undefined,
+        dueDate: defaultValues?.dueDate || null,
+      });
+    }
+  }, [open, projectId, defaultValues, form]);
 
   const handleSubmit = async (data: TaskFormData) => {
     setIsSubmitting(true);
