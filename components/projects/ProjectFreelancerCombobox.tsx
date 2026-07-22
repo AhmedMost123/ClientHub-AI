@@ -76,9 +76,8 @@ export function ProjectFreelancerCombobox() {
 
             <div className="flex items-center gap-2">
               <Popover open={open} onOpenChange={setOpen}>
-                  {/* @ts-expect-error type issue with PopoverTrigger */}
-                  <PopoverTrigger asChild>
-                    <FormControl>
+                  <FormControl>
+                    <PopoverTrigger asChild>
                       <Button
                         type="button"
                         variant="outline"
@@ -96,8 +95,8 @@ export function ProjectFreelancerCombobox() {
 
                         <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
                       </Button>
-                    </FormControl>
-                  </PopoverTrigger>
+                    </PopoverTrigger>
+                  </FormControl>
 
                 <PopoverContent align="start" className="w-[420px] p-0">
                 <Command shouldFilter={false}>

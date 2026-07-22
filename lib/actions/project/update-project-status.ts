@@ -79,13 +79,16 @@ export async function updateProjectStatus(
       }
     }
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${projectId}`);
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
+
     return success(projectId, "Project status updated");
   } catch (error: any) {
     console.error("Failed to update project status:", error);
     return failure("Failed to update project status");
   }
 }
-

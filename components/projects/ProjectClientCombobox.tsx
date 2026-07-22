@@ -110,7 +110,6 @@ export function ProjectClientCombobox() {
             <div className="flex items-center gap-2">
               <Popover open={open} onOpenChange={setOpen}>
                   <FormControl>
-                    {/* @ts-expect-error PopoverTrigger types are conflicting */}
                     <PopoverTrigger asChild>
                       <Button
                         type="button"

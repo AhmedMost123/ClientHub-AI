@@ -28,8 +28,12 @@ export async function updateProject(id: string, data: UpdateProjectInput) {
 
     await projectRepository.updateProject(id, data);
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${id}`);
+    revalidatePath("/", "layout");
 
     return success(id, "Project updated");
   } catch (error) {

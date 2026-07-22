@@ -4,6 +4,7 @@ import { RegisterSchema } from "@/lib/validations/auth";
 import { registerUser } from "@/lib/services/auth.service";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { getRequestIdentifier } from "@/lib/security/request-ip";
+
 export async function POST(req: Request) {
   const identifier = await getRequestIdentifier();
 
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
       },
     );
   }
+
   try {
     const body = await req.json();
 
@@ -32,30 +34,29 @@ export async function POST(req: Request) {
 
     const { confirmPassword, ...userData } = parsed.data;
 
-    await registerUser(userData);
+    const user = await registerUser(userData);
 
     return NextResponse.json(
       {
         success: true,
+        requiresVerification: true,
+        email: user.email,
       },
       {
         status: 201,
       },
     );
   } catch (error) {
-    console.error(error);
+    console.error("REGISTER ERROR:", error);
 
     return NextResponse.json(
       {
-        message: error instanceof Error ? error.message : String(error),
-        stack:
-          process.env.NODE_ENV === "development"
-            ? error instanceof Error
-              ? error.stack
-              : undefined
-            : undefined,
+        success: false,
+        message: error instanceof Error ? error.message : "Registration failed",
       },
-      { status: 500 },
+      {
+        status: 400,
+      },
     );
   }
 }

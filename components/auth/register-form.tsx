@@ -101,22 +101,9 @@ export function RegisterForm() {
         return;
       }
 
-      const signInResult = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-
-      if (signInResult?.error) {
-        setServerError(
-          "Account created but sign in failed. Please log in manually.",
-        );
-        return;
-      }
-
-      const session = await getSession();
-      router.push(getRedirectPathForRole(session?.user?.role));
-      router.refresh();
+      const resData = await response.json();
+      const targetEmail = resData?.email || data.email;
+      router.push(`/verify-email?email=${encodeURIComponent(targetEmail)}`);
     } catch {
       setServerError("Something went wrong. Please try again.");
     }

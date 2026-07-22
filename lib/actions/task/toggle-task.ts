@@ -47,9 +47,14 @@ export async function toggleTask(taskId: string) {
       });
     }
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${task.projectId}`);
     revalidatePath("/tasks");
+    revalidatePath("/", "layout");
+
     return success(updatedTask, "Task status toggled");
   } catch (error: any) {
     console.error("Failed to toggle task:", error);

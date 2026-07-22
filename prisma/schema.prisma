@@ -31,6 +31,9 @@ model User {
   sentProjectInvitations     ProjectInvitation[] @relation("SentProjectInvitations")
   createdTasks               Task[]              @relation("TaskCreator")
   settings                   UserSettings?
+  isVerified                 Boolean             @default(false)
+
+verification                VerificationCode?
 }
 
 model Client {
@@ -257,6 +260,15 @@ model ProjectInvitation {
   @@index([projectId])
   @@index([freelancerId])
   @@index([clientId])
+}
+model VerificationCode {
+  id         String   @id @default(cuid())
+  code       String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {

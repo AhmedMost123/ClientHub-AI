@@ -47,9 +47,14 @@ export async function createTask(data: CreateTaskInput) {
       }
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${data.projectId}`);
     revalidatePath("/tasks");
+    revalidatePath("/", "layout");
+
     return success(task, "Task created successfully");
   } catch (error: any) {
     console.error("Failed to create task:", error);

@@ -17,6 +17,8 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -33,6 +35,7 @@ export function LoginForm() {
     if (isSubmitting) return;
 
     setServerError(null);
+    setUnverifiedEmail(null);
 
     try {
       const result = await signIn("credentials", {
@@ -42,18 +45,23 @@ export function LoginForm() {
       });
 
       if (result?.error) {
-        setServerError("Invalid email or password.");
+        if (result.error.toLowerCase().includes("verify")) {
+          setUnverifiedEmail(data.email);
+          setServerError("Please verify your email before signing in.");
+        } else {
+          setServerError("Invalid email or password.");
+        }
         return;
       }
 
       const session = await getSession();
-      
+
       if (session?.user?.role) {
         router.replace(getRedirectPathForRole(session.user.role as any));
       } else {
         router.replace("/dashboard");
       }
-      
+
       router.refresh();
     } catch {
       setServerError("Something went wrong. Please try again.");
@@ -142,9 +150,17 @@ export function LoginForm() {
       </div>
 
       {serverError && (
-        <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {serverError}
-        </p>
+        <div className="rounded-xl bg-destructive/10 p-3.5 text-sm text-destructive border border-destructive/20 space-y-1">
+          <p>{serverError}</p>
+          {unverifiedEmail && (
+            <a
+              href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+              className="inline-block text-xs font-semibold text-primary underline hover:opacity-80 pt-1"
+            >
+              Click here to verify your email →
+            </a>
+          )}
+        </div>
       )}
 
       {/* Sign In Button */}

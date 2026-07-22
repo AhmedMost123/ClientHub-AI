@@ -31,8 +31,13 @@ export async function archiveProject(projectId: string) {
 
     await projectRepository.archiveProject(projectId);
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects", "layout");
     revalidatePath(`/projects/${projectId}`, "layout");
+    revalidatePath("/", "layout");
+
     return success(projectId, "Project archived successfully");
   } catch (error: unknown) {
     console.error("Failed to archive project:", error);

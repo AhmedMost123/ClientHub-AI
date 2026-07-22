@@ -20,6 +20,8 @@ then restart vscode
 
 npx prisma migrate reset
 
+npx prisma db push -> to sync the supabase DB with prisma
+
 npx prisma db seed
 
 tree /F /A

@@ -31,8 +31,12 @@ export async function restoreProject(projectId: string) {
 
     await projectRepository.restoreProject(projectId);
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects", "layout");
     revalidatePath(`/projects/${projectId}`, "layout");
+    revalidatePath("/", "layout");
     
     return success(projectId, "Project restored successfully");
   } catch (error: unknown) {

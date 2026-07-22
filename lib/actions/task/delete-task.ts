@@ -47,9 +47,14 @@ export async function deleteTask(taskId: string) {
       },
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${task.projectId}`);
     revalidatePath("/tasks");
+    revalidatePath("/", "layout");
+
     return success(taskId, "Task deleted successfully");
   } catch (error: unknown) {
     console.error("Failed to delete task:", error);

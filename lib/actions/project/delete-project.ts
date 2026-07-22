@@ -31,7 +31,12 @@ export async function deleteProject(projectId: string) {
 
     await projectRepository.deleteProject(projectId);
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
+    revalidatePath("/", "layout");
+
     return success(projectId, "Project deleted successfully");
   } catch (error: unknown) {
     console.error("Failed to delete project:", error);

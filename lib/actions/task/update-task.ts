@@ -45,9 +45,14 @@ export async function updateTask(data: UpdateTaskInput) {
       }
     });
 
+    revalidatePath("/dashboard");
+    revalidatePath("/client");
+    revalidatePath("/admin");
     revalidatePath("/projects");
     revalidatePath(`/projects/${data.projectId}`);
     revalidatePath("/tasks");
+    revalidatePath("/", "layout");
+
     return success(task, "Task updated successfully");
   } catch (error: any) {
     console.error("Failed to update task:", error);

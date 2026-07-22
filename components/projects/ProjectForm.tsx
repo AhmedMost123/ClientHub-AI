@@ -75,6 +75,7 @@ export function ProjectForm({ mode, role, initialValues, id, clientName }: Proje
       } else {
         router.push(`/projects/${id}`);
       }
+      router.refresh();
     } catch (error: any) {
       toast.error(error.message || `Failed to ${mode} project. Please try again.`);
       setIsSubmitting(false);

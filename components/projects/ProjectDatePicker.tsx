@@ -31,11 +31,11 @@ export function ProjectDatePicker() {
         <FormItem className="flex flex-col space-y-2">
           <FormLabel className="text-sm font-medium text-foreground">Due Date</FormLabel>
           <Popover>
-            {/* @ts-expect-error type error in radux-ui */}
-          <PopoverTrigger asChild>
-              <FormControl>
+            <FormControl>
+              <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
+                  type="button"
                   className={cn(
                     "h-11 w-full rounded-xl border border-input bg-background px-3 text-left font-normal",
                     !field.value && "text-muted-foreground"
@@ -48,8 +48,8 @@ export function ProjectDatePicker() {
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
-              </FormControl>
-            </PopoverTrigger>
+              </PopoverTrigger>
+            </FormControl>
             <PopoverContent className="w-auto p-0 rounded-xl" align="start">
               <Calendar
                 mode="single"
