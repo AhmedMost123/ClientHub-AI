@@ -37,7 +37,7 @@ export function ProjectStatusSelect() {
           <FormLabel className="text-sm font-medium text-foreground">
             Status
           </FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+          <Select onValueChange={field.onChange} value={field.value ?? ""}>
             <FormControl>
               <SelectTrigger className="flex h-11 w-full items-center justify-between rounded-xl border border-input bg-background px-3 text-sm text-foreground shadow-sm transition-colors focus:ring-2 focus:ring-ring/50">
                 <SelectValue placeholder="Select a status" />
