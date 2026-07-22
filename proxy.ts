@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 import { getRedirectPathForRole } from "@/lib/auth/redirects";
 
-export async function proxy(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-  const isLoggedIn = !!token;
-  const role = token?.role as "FREELANCER" | "CLIENT" | "ADMIN" | undefined;
+export const proxy = auth(async (req) => {
+  // In Auth.js v5, req.auth contains your session object!
+  const isLoggedIn = !!req.auth;
+  const role = req.auth?.user?.role as "FREELANCER" | "CLIENT" | "ADMIN" | undefined;
+  
   const isAuthPage =
     req.nextUrl.pathname.startsWith("/login") ||
     req.nextUrl.pathname.startsWith("/register");
+  
   const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard");
   const isClientPage = req.nextUrl.pathname.startsWith("/client");
   const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
@@ -30,9 +31,7 @@ export async function proxy(req: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(
-      new URL(getRedirectPathForRole(role), req.url),
-    );
+    return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
   }
 
   // Protect protected routes
@@ -43,49 +42,26 @@ export async function proxy(req: NextRequest) {
   // Role-based route protection
   if (isLoggedIn) {
     if (isDashboardPage && role !== "FREELANCER") {
-      return NextResponse.redirect(
-        new URL(getRedirectPathForRole(role), req.url),
-      );
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
     if (isClientPage && role !== "CLIENT") {
-      return NextResponse.redirect(
-        new URL(getRedirectPathForRole(role), req.url),
-      );
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
     if (isAdminPage && role !== "ADMIN") {
-      return NextResponse.redirect(
-        new URL(getRedirectPathForRole(role), req.url),
-      );
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
     if (isFreelancerAiPage && role !== "FREELANCER") {
-      return NextResponse.redirect(
-        new URL(getRedirectPathForRole(role), req.url),
-      );
+      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
     }
   }
 
-  // Check if account is disabled (do not trust old JWT)
-  if (isLoggedIn && isProtectedRoute) {
-    try {
-      const statusRes = await fetch(new URL("/api/auth/status", req.url), {
-        headers: { cookie: req.headers.get("cookie") || "" },
-      });
-      if (statusRes.ok) {
-        const { isDisabled } = await statusRes.json();
-        if (isDisabled) {
-          const response = NextResponse.redirect(new URL("/", req.url));
-          response.cookies.delete("authjs.session-token");
-          response.cookies.delete("__Secure-authjs.session-token");
-          return response;
-        }
-      }
-    } catch (e) {
-      // Ignore fetch errors, fallback to allowing request
-    }
-  }
+  // NOTE: Remove the fetch to /api/auth/status from middleware. 
+  // If you need to check if an account is disabled on every request, 
+  // you should do that inside the `callbacks.authorized` or `callbacks.jwt` in auth.config.ts, 
+  // where you have direct database access via the Node runtime, not Edge middleware!
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
