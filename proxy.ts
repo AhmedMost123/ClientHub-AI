@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { getRedirectPathForRole } from "@/lib/auth/redirects";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;
   const role = token?.role as "FREELANCER" | "CLIENT" | "ADMIN" | undefined;
@@ -30,7 +30,9 @@ export async function middleware(req: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+    return NextResponse.redirect(
+      new URL(getRedirectPathForRole(role), req.url),
+    );
   }
 
   // Protect protected routes
@@ -41,16 +43,24 @@ export async function middleware(req: NextRequest) {
   // Role-based route protection
   if (isLoggedIn) {
     if (isDashboardPage && role !== "FREELANCER") {
-      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+      return NextResponse.redirect(
+        new URL(getRedirectPathForRole(role), req.url),
+      );
     }
     if (isClientPage && role !== "CLIENT") {
-      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+      return NextResponse.redirect(
+        new URL(getRedirectPathForRole(role), req.url),
+      );
     }
     if (isAdminPage && role !== "ADMIN") {
-      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+      return NextResponse.redirect(
+        new URL(getRedirectPathForRole(role), req.url),
+      );
     }
     if (isFreelancerAiPage && role !== "FREELANCER") {
-      return NextResponse.redirect(new URL(getRedirectPathForRole(role), req.url));
+      return NextResponse.redirect(
+        new URL(getRedirectPathForRole(role), req.url),
+      );
     }
   }
 
