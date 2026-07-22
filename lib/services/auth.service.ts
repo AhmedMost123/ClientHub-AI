@@ -1,7 +1,5 @@
 import { hashPassword, comparePassword } from "../utils/passwords";
 import { createUser, findUserByEmail } from "../repositories/user.repository";
-import { createVerification } from "./verification.service";
-import { verifyOneTimeAuthToken } from "@/lib/security/auth-token";
 
 type UserRole = "FREELANCER" | "CLIENT" | "ADMIN";
 
@@ -11,9 +9,12 @@ export async function registerUser(data: {
   password: string;
   role: UserRole;
 }) {
+  console.log(`[AUTH_SERVICE] Registration process started for email: ${data.email}`);
+
   const existingUser = await findUserByEmail(data.email);
 
   if (existingUser) {
+    console.warn(`[AUTH_SERVICE] Registration failed: Email ${data.email} already exists`);
     throw new Error("Email already exists");
   }
 
@@ -27,18 +28,17 @@ export async function registerUser(data: {
     throw new Error("Invalid role");
   }
 
+  console.log(`[AUTH_SERVICE] Hashing user password...`);
   const hashedPassword = await hashPassword(data.password);
+  console.log(`[AUTH_SERVICE] Password hashed successfully.`);
 
+  console.log(`[AUTH_SERVICE] Creating user in database...`);
   const user = await createUser({
     ...data,
     password: hashedPassword,
+    isVerified: true,
   });
-
-  await createVerification({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-  });
+  console.log(`[AUTH_SERVICE] User created successfully with isVerified=true, ID: ${user.id}`);
 
   return user;
 }
@@ -46,7 +46,6 @@ export async function registerUser(data: {
 export async function authenticateUser(
   email: string,
   password?: string,
-  verificationToken?: string,
 ) {
   const user = await findUserByEmail(email);
 
@@ -58,32 +57,8 @@ export async function authenticateUser(
     throw new Error("This account has been disabled.");
   }
 
-  if (verificationToken) {
-    const isValidToken = verifyOneTimeAuthToken(
-      user.id,
-      user.email,
-      verificationToken,
-    );
-
-    if (!isValidToken) {
-      return null;
-    }
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      image: user.avatar,
-    };
-  }
-
   if (!password) {
     return null;
-  }
-
-  if (!user.isVerified) {
-    throw new Error("Please verify your email before signing in.");
   }
 
   const validPassword = await comparePassword(password, user.password);
@@ -100,3 +75,4 @@ export async function authenticateUser(
     image: user.avatar,
   };
 }
+

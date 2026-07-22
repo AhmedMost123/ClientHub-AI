@@ -15,6 +15,7 @@ export const userRepository = {
     email: string;
     password: string;
     role: UserRole;
+    isVerified?: boolean;
   }) {
     return prisma.user.create({
       data: {
@@ -22,6 +23,7 @@ export const userRepository = {
         email: data.email,
         password: data.password,
         role: data.role,
+        isVerified: data.isVerified ?? true,
         isDisabled: false,
       },
     });

@@ -42,6 +42,7 @@ export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const {
     register,
@@ -62,9 +63,10 @@ export function RegisterForm() {
   });
 
   const selectedAccountType = watch("role");
+  const isLoading = isSubmitting || isNavigating;
 
   const onSubmit = async (data: RegisterInput) => {
-    if (isSubmitting) return;
+    if (isLoading) return;
 
     setServerError(null);
 
@@ -78,34 +80,39 @@ export function RegisterForm() {
       if (response.status === 400) {
         const validationErrors = await response.json();
         applyFlattenedFieldErrors(validationErrors, setError);
+        setIsNavigating(false);
         return;
       }
 
       if (response.status === 403) {
         setServerError("You cannot create an admin account.");
+        setIsNavigating(false);
         return;
       }
 
       if (response.status === 409) {
         setServerError("Email already exists.");
+        setIsNavigating(false);
         return;
       }
 
       if (response.status === 500) {
         setServerError("Something went wrong. Please try again.");
+        setIsNavigating(false);
         return;
       }
 
       if (response.status !== 201) {
         setServerError("Something went wrong. Please try again.");
+        setIsNavigating(false);
         return;
       }
 
-      const resData = await response.json();
-      const targetEmail = resData?.email || data.email;
-      router.push(`/verify-email?email=${encodeURIComponent(targetEmail)}`);
+      setIsNavigating(true);
+      router.push("/login?registered=true");
     } catch {
       setServerError("Something went wrong. Please try again.");
+      setIsNavigating(false);
     }
   };
 

@@ -16,8 +16,7 @@ export function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-
-  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const {
     register,
@@ -31,11 +30,12 @@ export function LoginForm() {
     },
   });
 
+  const isLoading = isSubmitting || isNavigating;
+
   const onSubmit = async (data: LoginInput) => {
-    if (isSubmitting) return;
+    if (isLoading) return;
 
     setServerError(null);
-    setUnverifiedEmail(null);
 
     try {
       const result = await signIn("credentials", {
@@ -45,26 +45,21 @@ export function LoginForm() {
       });
 
       if (result?.error) {
-        if (result.error.toLowerCase().includes("verify")) {
-          setUnverifiedEmail(data.email);
-          setServerError("Please verify your email before signing in.");
-        } else {
-          setServerError("Invalid email or password.");
-        }
+        setServerError("Invalid email or password.");
+        setIsNavigating(false);
         return;
       }
 
+      setIsNavigating(true);
+
       const session = await getSession();
+      const redirectPath = getRedirectPathForRole(session?.user?.role as any);
 
-      if (session?.user?.role) {
-        router.replace(getRedirectPathForRole(session.user.role as any));
-      } else {
-        router.replace("/dashboard");
-      }
-
+      router.replace(redirectPath);
       router.refresh();
     } catch {
       setServerError("Something went wrong. Please try again.");
+      setIsNavigating(false);
     }
   };
 
@@ -85,7 +80,7 @@ export function LoginForm() {
           className="h-12 rounded-xl"
           aria-required
           aria-invalid={!!errors.email}
-          disabled={isSubmitting}
+          disabled={isLoading}
           {...register("email")}
         />
         {errors.email && (
@@ -109,7 +104,7 @@ export function LoginForm() {
             className="h-12 rounded-xl pr-10"
             aria-required
             aria-invalid={!!errors.password}
-            disabled={isSubmitting}
+            disabled={isLoading}
             {...register("password")}
           />
           <button
@@ -117,7 +112,7 @@ export function LoginForm() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
             aria-label={showPassword ? "Hide password" : "Show password"}
-            disabled={isSubmitting}
+            disabled={isLoading}
           >
             {showPassword ? (
               <EyeOff className="size-5" />
@@ -137,7 +132,7 @@ export function LoginForm() {
           <input
             type="checkbox"
             className="size-4 rounded border-border bg-background text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            disabled={isSubmitting}
+            disabled={isLoading}
           />
           <span className="text-muted-foreground">Remember me</span>
         </label>
@@ -150,16 +145,8 @@ export function LoginForm() {
       </div>
 
       {serverError && (
-        <div className="rounded-xl bg-destructive/10 p-3.5 text-sm text-destructive border border-destructive/20 space-y-1">
+        <div className="rounded-xl bg-destructive/10 p-3.5 text-sm text-destructive border border-destructive/20">
           <p>{serverError}</p>
-          {unverifiedEmail && (
-            <a
-              href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
-              className="inline-block text-xs font-semibold text-primary underline hover:opacity-80 pt-1"
-            >
-              Click here to verify your email →
-            </a>
-          )}
         </div>
       )}
 
@@ -168,9 +155,9 @@ export function LoginForm() {
         type="submit"
         className="h-12 w-full rounded-xl text-base transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
         style={{ background: "var(--gradient-brand)" }}
-        disabled={isSubmitting}
+        disabled={isLoading}
       >
-        {isSubmitting ? (
+        {isLoading ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             Signing In...
@@ -197,7 +184,7 @@ export function LoginForm() {
         type="button"
         variant="outline"
         className="h-12 w-full rounded-xl text-base transition-all duration-200 hover:-translate-y-px"
-        disabled={isSubmitting}
+        disabled={isLoading}
       >
         Continue with Google
       </Button>
