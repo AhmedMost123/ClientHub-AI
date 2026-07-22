@@ -80,3 +80,4 @@ More server actions
 I recommend Option A for ClientHub AI v1
 
 Since this is your portfolio SaaS, it's much simpler, and you can migrate to private buckets later
+AUTH_URL="http://localhost:3000"
