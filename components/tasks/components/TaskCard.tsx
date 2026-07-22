@@ -146,7 +146,6 @@ export function TaskCard({
           Ask AI
         </Button>
         <DropdownMenu>
-          {/* @ts-expect-error type issue */}
           <DropdownMenuTrigger asChild>
             <Button size="icon-sm" variant="ghost" className="h-7 w-7">
               <MoreHorizontal className="size-4" />
