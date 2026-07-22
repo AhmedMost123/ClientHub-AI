@@ -43,7 +43,9 @@ export function DeleteAccountDialog({
       onOpenChange(false);
       await signOut({
         redirect: true,
-        callbackUrl: "/",
+        // Use absolute URL to ensure production redirects to the live domain,
+        // not to whatever AUTH_URL env var might be set to (e.g. localhost).
+        callbackUrl: `${window.location.origin}/`,
       });
     } else {
       alert(result.error);

@@ -21,7 +21,9 @@ export function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" });
+    // Use absolute URL to ensure production redirects to the live domain,
+    // not to whatever AUTH_URL env var might be set to (e.g. localhost).
+    await signOut({ callbackUrl: `${window.location.origin}/` });
   };
 
   return (
